@@ -8,6 +8,9 @@ Chi-Heng Hung
 Nansong Yi  
 
 ### Install  
+**Note:** If you are not using the default mushr image then you will need to install [rangelibc](https://github.com/kctess5/range_libc).
+
+Clone repo  
 `cd ~/catkin_ws && git clone git@github.com:prl-mushr/mushr_pf.git`
 
 ### API
