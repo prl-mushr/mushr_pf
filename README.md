@@ -1,6 +1,12 @@
 # mushr_pf: Particle Filter
 Particle filter (pf) for localization using the laser scanner. The pf requires a map and laser scan.
 
+**Authors:**  
+Lirui Wang  
+Joseph Shieh  
+Chi-Heng Hung  
+Nansong Yi  
+
 ### Install  
 `cd ~/catkin_ws && git clone git@github.com:prl-mushr/mushr_pf.git`
 
