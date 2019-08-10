@@ -22,7 +22,6 @@ from MotionModel import  KinematicMotionModel
 
 MAP_TOPIC = "/map"
 PUBLISH_PREFIX = '/pf'
-PUBLISH_TF = True
 
 '''
   Implements particle filtering for estimating the state of the robot car
@@ -32,6 +31,7 @@ class ParticleFilter():
 
   '''
   Initializes the particle filter
+    publish_tf: Whether or not to publish the tf. Should be false in sim, true on real robot
     n_particles: The number of particles
     n_viz_particles: The number of particles to visualize
     odometry_topic: The topic containing odometry information
@@ -47,11 +47,13 @@ class ParticleFilter():
     steering_angle_to_servo_gain: Gain conversion param from servo position to steering angle 
     car_length: The length of the car
   '''
-  def __init__(self, n_particles, n_viz_particles, odometry_topic,
+  def __init__(self, publish_tf, n_particles, n_viz_particles, odometry_topic,
                motor_state_topic, servo_state_topic, scan_topic, laser_ray_step,
                exclude_max_range_rays, max_range_meters, 
                speed_to_erpm_offset, speed_to_erpm_gain, steering_angle_to_servo_offset,
                steering_angle_to_servo_gain, car_length):
+
+    self.PUBLISH_TF = publish_tf
     self.N_PARTICLES = n_particles # The number of particles
                                    # In this implementation, the total number of 
                                    # particles is constant
@@ -190,7 +192,7 @@ class ParticleFilter():
       off_y = delta_off[0]*np.sin(pose[2]) + delta_off[1]*np.cos(pose[2])
 
       # Broadcast the tf
-      self.pub_tf.sendTransform((pose[0]+off_x,pose[1]+off_y,0.0),tf.transformations.quaternion_from_euler(0,0,pose[2]+tf.transformations.euler_from_quaternion(delta_rot)[2]),stamp,"/map","/odom")
+      self.pub_tf.sendTransform((pose[0]+off_x,pose[1]+off_y,0.0),tf.transformations.quaternion_from_euler(0,0,pose[2]+tf.transformations.euler_from_quaternion(delta_rot)[2]),stamp,"/odom","/map")
 
     except (tf.LookupException) as e: # Will occur if odom frame does not exist
       print(e)
@@ -257,7 +259,7 @@ class ParticleFilter():
     self.inferred_pose = self.expected_pose()
 
     if isinstance(self.inferred_pose, np.ndarray):
-      if PUBLISH_TF:
+      if self.PUBLISH_TF:
         self.publish_tf(self.inferred_pose)
       ps = PoseStamped()
       ps.header = Utils.make_header("map")
@@ -377,7 +379,8 @@ class ParticleFilter():
 # Suggested main 
 if __name__ == '__main__':
   rospy.init_node("particle_filter", anonymous=True) # Initialize the node
-  
+
+  publish_tf = bool(rospy.get_param("~publish_tf")) # Set to false in sim, true on real robot
   n_particles = int(rospy.get_param("~n_particles")) # The number of particles
   n_viz_particles = int(rospy.get_param("~n_viz_particles")) # The number of particles to visualize
   odometry_topic = rospy.get_param("~odometry_topic", "/vesc/odom") # The topic containing odometry information
@@ -395,7 +398,7 @@ if __name__ == '__main__':
   car_length = float(rospy.get_param("/car_kinematics/car_length", 0.33)) # The length of the car
   
   # Create the particle filter  
-  pf = ParticleFilter(n_particles, n_viz_particles, odometry_topic,
+  pf = ParticleFilter(publish_tf, n_particles, n_viz_particles, odometry_topic,
                       motor_state_topic, servo_state_topic, scan_topic, laser_ray_step,
                       exclude_max_range_rays, max_range_meters, 
                       speed_to_erpm_offset, speed_to_erpm_gain, steering_angle_to_servo_offset,

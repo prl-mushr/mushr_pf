@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>class_pf</name>
+  <name>mushr_pf</name>
   <version>0.0.0</version>
   <description>Group 8 Particle Filter</description>
   <author>Lirui Wang</author>
