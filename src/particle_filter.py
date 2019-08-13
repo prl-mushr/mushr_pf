@@ -12,9 +12,9 @@ from nav_msgs.msg import OccupancyGrid, Odometry
 from sensor_msgs.msg import LaserScan
 
 import utils
-from MotionModel import KinematicMotionModel
-from ReSample import ReSampler
-from SensorModel import SensorModel
+from motion_model import KinematicMotionModel
+from resample import ReSampler
+from sensor_model import SensorModel
 
 MAP_TOPIC = "/map"
 PUBLISH_PREFIX = "/pf"
@@ -150,12 +150,10 @@ class ParticleFilter:
         self.ents = None
         self.ents_sum = 0.0
         self.noisy_cnt = 0
-        self.NUM_REGIONS = (
-            25
-        )  # number of regions to partition. Simulation: 25, Real: 5.
-        self.REGIONAL_ROUNDS = (
-            5
-        )  # number of updates for regional localization. Simulation 5, Real: 3.
+        # number of regions to partition. Simulation: 25, Real: 5.
+        self.NUM_REGIONS = 25
+        # number of updates for regional localization. Simulation 5, Real: 3.
+        self.REGIONAL_ROUNDS = 5
         self.regions = []
         self.click_mode = True
         self.debug_mode = False
@@ -283,15 +281,14 @@ class ParticleFilter:
             print("failed to find odom")
             # self.pub_tf.sendTransform((pose[0],pose[1],0),tf.transformations.quaternion_from_euler(0,0,pose[2]), stamp , "/laser_link", "/map")
 
-    """
-    Uses cosine and sine averaging to more accurately compute average theta
-    To get one combined value use the dot product of position and weight vectors
-    https://en.wikipedia.org/wiki/Mean_of_circular_quantities
-
-    returns: np array of the expected pose given the current particles and weights
-  """
-
     def expected_pose(self):
+        """
+        Uses cosine and sine averaging to more accurately compute average theta
+        To get one combined value use the dot product of position and weight vectors
+        https://en.wikipedia.org/wiki/Mean_of_circular_quantities
+
+        returns: np array of the expected pose given the current particles and weights
+        """
         cosines = np.cos(self.particles[:, 2])
         sines = np.sin(self.particles[:, 2])
         theta = np.arctan2(np.dot(sines, self.weights), np.dot(cosines, self.weights))
@@ -300,18 +297,16 @@ class ParticleFilter:
         position[1] += (car_length / 2) * np.sin(theta)
         return np.array((position[0], position[1], theta), dtype=np.float)
 
-    """
-    Students implement (add tip about vectorized stuff)
-    Reinitialize particles and weights according to the received initial pose
-    Applies Gaussian noise to each particle's pose
-    HINT: use Utils.quaternion_to_angle()
-    Remember to use vectorized computation!
-
-    msg: '/initialpose' topic. RVIZ publishes a message to this topic when you specify an initial pose using its GUI
-    returns: nothing
-  """
-
     def clicked_pose_cb(self, msg):
+        """
+        Reinitialize particles and weights according to the received initial pose
+        Applies Gaussian noise to each particle's pose
+        HINT: use Utils.quaternion_to_angle()
+        Remember to use vectorized computation!
+
+        msg: '/initialpose' topic. RVIZ publishes a message to this topic when you specify an initial pose using its GUI
+        returns: nothing
+        """
         if self.click_mode:
             self.state_lock.acquire()
             pose = msg.pose.pose

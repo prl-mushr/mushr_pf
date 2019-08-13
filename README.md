@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/prl-mushr/mushr_pf/_apis/build/status/prl-mushr.mushr_pf?branchName=master)](https://dev.azure.com/prl-mushr/mushr_pf/_build/latest?definitionId=4&branchName=master)
+
 # mushr_pf: Particle Filter
 Particle filter (pf) for localization using the laser scanner. The pf requires a map and laser scan.
 
