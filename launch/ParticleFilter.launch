@@ -1,4 +1,5 @@
 <launch>
+    <arg name="publish_tf" default="false" /> <!-- Set to false in sim, set to true on real robot -->
     <arg name="n_particles" default="1000"/>
     <arg name="n_viz_particles" default="60" />
     <arg name="odometry_topic" default="/vesc/odom" />
@@ -10,6 +11,7 @@
     <arg name="max_range_meters" default="11.0" />
 	
     <node pkg="mushr_pf" type="particle_filter.py" name="particle_filter" output="screen">
+        <param name="publish_tf" value="$(arg publish_tf)" />
         <param name="n_particles" value="$(arg n_particles)"/>
         <param name="n_viz_particles" value="$(arg n_viz_particles)"/>
         <param name="odometry_topic" value="$(arg odometry_topic)"/>
