@@ -18,7 +18,6 @@ from sensor_model import SensorModel
 
 MAP_TOPIC = "/map"
 PUBLISH_PREFIX = "/pf"
-PUBLISH_TF = True
 
 
 class ParticleFilter:
@@ -28,6 +27,7 @@ class ParticleFilter:
 
     def __init__(
         self,
+        publish_tf,
         n_particles,
         n_viz_particles,
         odometry_topic,
@@ -45,6 +45,7 @@ class ParticleFilter:
     ):
         """
           Initializes the particle filter
+            publish_tf: Whether or not to publish the tf. Should be false in sim, true on real robot
             n_particles: The number of particles
             n_viz_particles: The number of particles to visualize
             odometry_topic: The topic containing odometry information
@@ -60,9 +61,9 @@ class ParticleFilter:
             steering_angle_to_servo_gain: Gain conversion param from servo position to steering angle
             car_length: The length of the car
         """
-        self.N_PARTICLES = n_particles  # The number of particles
-        # In this implementation, the total number of
-        # particles is constant
+        self.PUBLISH_TF = publish_tf
+        # The number of particles in this implementation, the total number of particles is constant.
+        self.N_PARTICLES = n_particles
         self.N_VIZ_PARTICLES = n_viz_particles  # The number of particles to visualize
 
         # Cached list of particle indices
@@ -86,10 +87,8 @@ class ParticleFilter:
             (map_msg.info.height, map_msg.info.width)
         )
         self.permissible_region = np.zeros_like(array_255, dtype=bool)
-        self.permissible_region[
-            array_255 == 0
-        ] = 1  # Numpy array of dimension (map_msg.info.height, map_msg.info.width),
-        # With values 0: not permissible, 1: permissible
+        # Numpy array of dimension (map_msg.info.height, map_msg.info.width), with values 0: not permissible, 1: permissible
+        self.permissible_region[array_255 == 0] = 1
 
         # Globally initialize the particles
 
@@ -202,7 +201,9 @@ class ParticleFilter:
         permissible_step = angle_step * len(permissible_x) / self.particles.shape[0]
 
         # Indices of permissible states to use
-        indices = np.arange(0, len(permissible_x), permissible_step)[:(self.particles.shape[0] / angle_step)]
+        indices = np.arange(0, len(permissible_x), permissible_step)[
+            : (self.particles.shape[0] / angle_step)
+        ]
 
         # Proxy for the new particles
         permissible_states = np.zeros((self.particles.shape[0], 3))
@@ -272,8 +273,8 @@ class ParticleFilter:
                     pose[2] + tf.transformations.euler_from_quaternion(delta_rot)[2],
                 ),
                 stamp,
-                "/map",
                 "/odom",
+                "/map",
             )
 
         except (tf.LookupException) as e:  # Will occur if odom frame does not exist
@@ -341,7 +342,7 @@ class ParticleFilter:
         self.inferred_pose = self.expected_pose()
 
         if isinstance(self.inferred_pose, np.ndarray):
-            if PUBLISH_TF:
+            if self.PUBLISH_TF:
                 self.publish_tf(self.inferred_pose)
             ps = PoseStamped()
             ps.header = utils.make_header("map")
@@ -488,6 +489,7 @@ class ParticleFilter:
 if __name__ == "__main__":
     rospy.init_node("particle_filter", anonymous=True)  # Initialize the node
 
+    publish_tf = bool(rospy.get_param("~publish_tf"))
     n_particles = int(rospy.get_param("~n_particles"))  # The number of particles
     # The number of particles to visualize
     n_viz_particles = int(rospy.get_param("~n_viz_particles"))
@@ -526,6 +528,7 @@ if __name__ == "__main__":
 
     # Create the particle filter
     pf = ParticleFilter(
+        publish_tf,
         n_particles,
         n_viz_particles,
         odometry_topic,

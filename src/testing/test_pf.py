@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
+# Test File for PF
+# Matt Schmittle
+# DO NOT EDIT
+
 import time
 
 import message_filters
 import numpy as np
-
-# Test File for PF
-# Matt Schmittle
-# DO NOT EDIT
 import rospy
 from geometry_msgs.msg import PoseStamped
 from matplotlib import pyplot as plt

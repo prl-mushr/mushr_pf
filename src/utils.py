@@ -8,8 +8,8 @@ import rospy
 import tf
 import tf.transformations
 from geometry_msgs.msg import Point32, Pose, Quaternion
-from std_msgs.msg import Header
 from nav_msgs.srv import GetMap
+from std_msgs.msg import Header
 
 
 def angle_to_quaternion(angle):

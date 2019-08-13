@@ -4,10 +4,9 @@ import Queue
 from threading import Lock
 
 import numpy as np
+import range_libc
 import rospy
 from sensor_msgs.msg import LaserScan
-
-import range_libc
 
 THETA_DISCRETIZATION = 112  # Discretization of scanning angle
 INV_SQUASH_FACTOR = 0.2  # Factor for helping the weight distribution to be less peaked
@@ -70,7 +69,9 @@ class SensorModel:
         max_range_px = int(self.MAX_RANGE_METERS / map_msg.info.resolution)
 
         # The range method that will be used for ray casting
-        self.range_method = range_libc.PyCDDTCast(oMap, max_range_px, THETA_DISCRETIZATION)
+        self.range_method = range_libc.PyCDDTCast(
+            oMap, max_range_px, THETA_DISCRETIZATION
+        )
 
         # Load the sensor model expressed as a table
         self.range_method.set_sensor_model(self.precompute_sensor_model(max_range_px))
