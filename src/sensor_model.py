@@ -136,38 +136,39 @@ class SensorModel:
                 )
             ranges = np.array(msg.ranges)  # Get the measurements
             ranges[np.isnan(ranges)] = self.MAX_RANGE_METERS  # Remove nans
+            # Find non-extreme measurements
             valid_indices = np.logical_and(
                 ranges > 0.01, ranges < self.MAX_RANGE_METERS
-            )  # Find non-extreme measurements
+            )
+            # Get angles corresponding to non-extreme measurements
             self.filtered_angles = np.copy(self.laser_angles[valid_indices]).astype(
                 np.float32
-            )  # Get angles corresponding to non-extreme measurements
-            self.filtered_ranges = np.copy(ranges[valid_indices]).astype(
-                np.float32
-            )  # Get non-extreme measurements
+            )
+            # Get non-extreme measurements
+            self.filtered_ranges = np.copy(ranges[valid_indices]).astype(np.float32)
 
-            ray_count = int(
-                self.laser_angles.shape[0] / self.LASER_RAY_STEP
-            )  # Compute expected number of rays
+            # Compute expected number of rays
+            ray_count = int(self.laser_angles.shape[0] / self.LASER_RAY_STEP)
+            # Get downsample indices
             sample_indices = np.arange(
                 0,
                 self.filtered_angles.shape[0],
                 float(self.filtered_angles.shape[0]) / ray_count,
-            ).astype(
-                np.int
-            )  # Get downsample indices
-            self.downsampled_angles = np.zeros(
-                ray_count + 1, dtype=np.float32
-            )  # Initialize down sample angles
-            self.downsampled_ranges = np.zeros(
-                ray_count + 1, dtype=np.float32
-            )  # Initialize down sample measurements
+            ).astype(np.int)
+
+            # Initialize down sample angles
+            self.downsampled_angles = np.zeros(ray_count + 1, dtype=np.float32)
+            # Initialize down sample measurements
+            self.downsampled_ranges = np.zeros(ray_count + 1, dtype=np.float32)
+
+            # Populate downsample angles
             self.downsampled_angles[: sample_indices.shape[0]] = np.copy(
                 self.filtered_angles[sample_indices]
-            )  # Populate downsample angles
+            )
+            # Populate downsample measurements
             self.downsampled_ranges[: sample_indices.shape[0]] = np.copy(
                 self.filtered_ranges[sample_indices]
-            )  # Populate downsample measurements
+            )
 
         # Compute the observation
         # obs is a a two element tuple
@@ -213,7 +214,6 @@ class SensorModel:
         """
         table_width = int(max_range_px) + 1
 
-        # YOUR CODE HERE
         # Don't forget to normalize the weights!
         def pdf(z_obs, z):
             var = SIGMA_HIT ** 2

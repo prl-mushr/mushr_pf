@@ -7,6 +7,7 @@ import numpy as np
 import rospy
 import tf
 import tf.transformations
+from tf.transformation import quaternion_from_euler, euler_from_quaternion
 from geometry_msgs.msg import PoseArray, PoseStamped, PoseWithCovarianceStamped
 from nav_msgs.msg import OccupancyGrid, Odometry
 from sensor_msgs.msg import LaserScan
@@ -95,25 +96,29 @@ class ParticleFilter:
         # Publish particle filter state
         # Used to create a tf between the map and the laser for visualization
         self.pub_tf = tf.TransformBroadcaster()
+
+        # Publishes the expected pose
         self.pose_pub = rospy.Publisher(
             PUBLISH_PREFIX + "/inferred_pose", PoseStamped, queue_size=1
-        )  # Publishes the expected pose
+        )
+        # Publishes a subsample of the particles
         self.particle_pub = rospy.Publisher(
             PUBLISH_PREFIX + "/particles", PoseArray, queue_size=1
-        )  # Publishes a subsample of the particles
+        )
+        # Publishes the most recent laser scan
         self.pub_laser = rospy.Publisher(
             PUBLISH_PREFIX + "/scan", LaserScan, queue_size=1
-        )  # Publishes the most recent laser scan
+        )
+        # Publishes the path of the car
         self.pub_odom = rospy.Publisher(
             PUBLISH_PREFIX + "/odom", Odometry, queue_size=1
-        )  # Publishes the path of the car
+        )
 
         rospy.sleep(1.0)
         self.initialize_global()
 
-        self.resampler = ReSampler(
-            self.particles, self.weights, self.state_lock
-        )  # An object used for resampling
+        # An object used for resampling
+        self.resampler = ReSampler(self.particles, self.weights, self.state_lock)
 
         # An object used for applying sensor model
         self.sensor_model = SensorModel(
@@ -211,24 +216,12 @@ class ParticleFilter:
         # Loop through permissible states, each iteration drawing particles with
         # different rotation
         for i in range(angle_step):
-            permissible_states[
-                i
-                * (self.particles.shape[0] / angle_step) : (i + 1)
-                * (self.particles.shape[0] / angle_step),
-                0,
-            ] = permissible_y[indices]
-            permissible_states[
-                i
-                * (self.particles.shape[0] / angle_step) : (i + 1)
-                * (self.particles.shape[0] / angle_step),
-                1,
-            ] = permissible_x[indices]
-            permissible_states[
-                i
-                * (self.particles.shape[0] / angle_step) : (i + 1)
-                * (self.particles.shape[0] / angle_step),
-                2,
-            ] = i * (2 * np.pi / angle_step)
+            idx_start = i * (self.particles.shape[0] / angle_step)
+            idx_end = (i + 1) * (self.particles.shape[0] / angle_step)
+
+            permissible_states[idx_start:idx_end, 0] = permissible_y[indices]
+            permissible_states[idx_start:idx_end, 1] = permissible_x[indices]
+            permissible_states[idx_start:idx_end, 2] = i * (2 * np.pi / angle_step)
 
         # Transform permissible states to be w.r.t world
         utils.map_to_world(permissible_states, self.map_info)
@@ -243,15 +236,14 @@ class ParticleFilter:
         if self.debug_mode:
             self.global_localize = True
 
-    """
-    Publish a tf between the laser and the map
-    This is necessary in order to visualize the laser scan within the map
-      pose: The pose of the laser w.r.t the map
-      stamp: The time at which this pose was calculated, defaults to None - resulting
-             in using the time at which this function was called as the stamp
-  """
-
     def publish_tf(self, pose, stamp=None):
+        """
+        Publish a tf between the laser and the map
+        This is necessary in order to visualize the laser scan within the map
+          pose: The pose of the laser w.r.t the map
+          stamp: The time at which this pose was calculated, defaults to None - resulting
+                 in using the time at which this function was called as the stamp
+        """
         if stamp is None:
             stamp = rospy.Time.now()
         try:
@@ -267,10 +259,8 @@ class ParticleFilter:
             # Broadcast the tf
             self.pub_tf.sendTransform(
                 (pose[0] + off_x, pose[1] + off_y, 0.0),
-                tf.transformations.quaternion_from_euler(
-                    0,
-                    0,
-                    pose[2] + tf.transformations.euler_from_quaternion(delta_rot)[2],
+                quaternion_from_euler(
+                    0, 0, pose[2] + euler_from_quaternion(delta_rot)[2]
                 ),
                 stamp,
                 "/odom",
@@ -313,7 +303,6 @@ class ParticleFilter:
             pose = msg.pose.pose
             print("SETTING POSE")
 
-            # YOUR CODE HERE
             VAR_X = 0.001
             VAR_Y = 0.001
             VAR_THETA = 0.001
@@ -363,7 +352,6 @@ class ParticleFilter:
                 proposal_indices = np.random.choice(
                     self.particle_indices, self.N_VIZ_PARTICLES, p=self.weights
                 )
-                # proposal_indices = np.random.choice(self.particle_indices, self.N_VIZ_PARTICLES)
                 self.publish_particles(self.particles[proposal_indices, :])
             else:
                 self.publish_particles(self.particles)
@@ -392,18 +380,16 @@ class ParticleFilter:
         permissible_x, permissible_y = region
         assert len(permissible_x) >= self.particles.shape[0]
 
-        angle_step = (
-            4
-        )  # The number of particles at each location, each with different rotation
-        permissible_step = (
-            angle_step * len(permissible_x) / self.particles.shape[0]
-        )  # The sample interval for permissible states
+        # The number of particles at each location, each with different rotation
+        angle_step = 4
+        # The sample interval for permissible states
+        permissible_step = angle_step * len(permissible_x) / self.particles.shape[0]
+        # Indices of permissible states to use
         indices = np.arange(0, len(permissible_x), permissible_step)[
             : (self.particles.shape[0] / angle_step)
-        ]  # Indices of permissible states to use
-        permissible_states = np.zeros(
-            (self.particles.shape[0], 3)
-        )  # Proxy for the new particles
+        ]
+        # Proxy for the new particles
+        permissible_states = np.zeros((self.particles.shape[0], 3))
 
         # Loop through permissible states, each iteration drawing particles with
         # different rotation
@@ -464,7 +450,6 @@ class ParticleFilter:
         self.particles[:] = np.concatenate(regional_particles)
         self.weights[:] = np.concatenate(regional_weights)
         self.weights /= self.weights.sum()
-        # self.weights[:] = 1.0 / self.particles.shape[0]
         self.global_localize = False
         self.global_suspend = True
         self.sensor_model.do_confidence_update = True
