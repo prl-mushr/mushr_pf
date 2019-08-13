@@ -3,17 +3,32 @@
 # mushr_pf: Particle Filter
 Particle filter (pf) for localization using the laser scanner. The pf requires a map and laser scan.
 
-**Authors:**  
-Lirui Wang  
-Joseph Shieh  
-Chi-Heng Hung  
-Nansong Yi  
+**Authors:**
+Lirui Wang
+Joseph Shieh
+Chi-Heng Hung
+Nansong Yi
 
-### Install  
+### Install
 **Note:** If you are not using the default mushr image then you will need to install [rangelibc](https://github.com/kctess5/range_libc).
 
-Clone repo  
+Clone repo:
 `cd ~/catkin_ws && git clone git@github.com:prl-mushr/mushr_pf.git`
+
+### Running the PF
+The `publish_tf` flag needs to be *false* when running in *Simulation* (as the simulation will publish the TFs), and *true* when running on the car:
+```xml
+<launch>
+...
+
+  <include file="$(find mushr_pf)/launch/ParticleFilter.launch" />
+    <arg name="publish_tf" value="true"> <!-- true in real, false in sim -->
+  </include>
+
+...
+</launch>
+```
+Two launch files, `real.launch`, and `sim.launch` will do this automatically.
 
 ### API
 Parameters can be changed in `config/params.yaml`
