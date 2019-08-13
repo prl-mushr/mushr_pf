@@ -6,8 +6,7 @@ from threading import Lock
 import numpy as np
 import rospy
 import tf
-import tf.transformations
-from tf.transformation import quaternion_from_euler, euler_from_quaternion
+from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from geometry_msgs.msg import PoseArray, PoseStamped, PoseWithCovarianceStamped
 from nav_msgs.msg import OccupancyGrid, Odometry
 from sensor_msgs.msg import LaserScan
@@ -270,7 +269,6 @@ class ParticleFilter:
         except (tf.LookupException) as e:  # Will occur if odom frame does not exist
             print(e)
             print("failed to find odom")
-            # self.pub_tf.sendTransform((pose[0],pose[1],0),tf.transformations.quaternion_from_euler(0,0,pose[2]), stamp , "/laser_link", "/map")
 
     def expected_pose(self):
         """
@@ -394,24 +392,12 @@ class ParticleFilter:
         # Loop through permissible states, each iteration drawing particles with
         # different rotation
         for i in range(angle_step):
-            permissible_states[
-                i
-                * (self.particles.shape[0] / angle_step) : (i + 1)
-                * (self.particles.shape[0] / angle_step),
-                0,
-            ] = permissible_y[indices]
-            permissible_states[
-                i
-                * (self.particles.shape[0] / angle_step) : (i + 1)
-                * (self.particles.shape[0] / angle_step),
-                1,
-            ] = permissible_x[indices]
-            permissible_states[
-                i
-                * (self.particles.shape[0] / angle_step) : (i + 1)
-                * (self.particles.shape[0] / angle_step),
-                2,
-            ] = i * (2 * np.pi / angle_step)
+            idx_start = i * (self.particles.shape[0] / angle_step)
+            idx_end = (i + 1) * (self.particles.shape[0] / angle_step)
+
+            permissible_states[idx_start:idx_end, 0] = permissible_y[indices]
+            permissible_states[idx_start:idx_end, 1] = permissible_x[indices]
+            permissible_states[idx_start:idx_end, 2] = i * (2 * np.pi / angle_step)
 
         # Transform permissible states to be w.r.t world
         utils.map_to_world(permissible_states, self.map_info)
