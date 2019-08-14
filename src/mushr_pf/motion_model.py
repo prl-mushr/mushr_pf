@@ -157,12 +157,10 @@ class KinematicMotionModel:
         # apply motion model's update rule
         theta = proposal_dist[:, 2]
         theta_new = theta + v / self.CAR_LENGTH * np.tan(delta) * dt
-        proposal_dist[:, 0] += (
-            self.CAR_LENGTH / np.tan(delta) * (np.sin(theta_new) - np.sin(theta))
-        )  # x
-        proposal_dist[:, 1] += (
-            self.CAR_LENGTH / np.tan(delta) * (-np.cos(theta_new) + np.cos(theta))
-        )  # y
+        # x
+        proposal_dist[:, 0] += (self.CAR_LENGTH / np.tan(delta) * (np.sin(theta_new) - np.sin(theta)))
+        # y
+        proposal_dist[:, 1] += (self.CAR_LENGTH / np.tan(delta) * (-np.cos(theta_new) + np.cos(theta)))
 
         # Add noise
         proposal_dist[:, 0] = np.random.normal(

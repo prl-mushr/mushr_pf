@@ -3,12 +3,12 @@
 # DO NOT EDIT
 
 import matplotlib.pyplot as plt
+import mushr_pf.utils as utils
 import numpy as np
 import rosbag
 from nav_msgs.msg import OccupancyGrid
 
-import utils as Utils
-from SensorModel import SensorModel
+from mushr_pf.sensor_model import SensorModel
 
 maps = ["hallway", "intersection"]
 print("Running " + str(len(maps)) + " maps")
@@ -50,26 +50,13 @@ if __name__ == "__main__":
         angle_step = 25
         particles = np.zeros((angle_step * permissible_x.shape[0], 3))
         for i in range(angle_step):
-            particles[
-                i
-                * (particles.shape[0] / angle_step) : (i + 1)
-                * (particles.shape[0] / angle_step),
-                0,
-            ] = permissible_y[:]
-            particles[
-                i
-                * (particles.shape[0] / angle_step) : (i + 1)
-                * (particles.shape[0] / angle_step),
-                1,
-            ] = permissible_x[:]
-            particles[
-                i
-                * (particles.shape[0] / angle_step) : (i + 1)
-                * (particles.shape[0] / angle_step),
-                2,
-            ] = i * (2 * np.pi / angle_step)
+            idx_start = i * (particles.shape[0] / angle_step)
+            idx_end = (i + 1) * (particles.shape[0] / angle_step)
+            particles[idx_start:idx_end, 0] = permissible_y[:]
+            particles[idx_start:idx_end, 1] = permissible_x[:]
+            particles[idx_start:idx_end, 2] = i * (2 * np.pi / angle_step)
 
-        Utils.map_to_world(particles, map_info)
+        utils.map_to_world(particles, map_info)
         weights = np.ones(particles.shape[0]) / float(particles.shape[0])
 
         # Instatiate Your Sensor Model

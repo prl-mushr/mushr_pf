@@ -6,10 +6,10 @@ from threading import Lock
 import numpy as np
 import rospy
 import tf
-from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from geometry_msgs.msg import PoseArray, PoseStamped, PoseWithCovarianceStamped
 from nav_msgs.msg import OccupancyGrid, Odometry
 from sensor_msgs.msg import LaserScan
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 import utils
 from motion_model import KinematicMotionModel

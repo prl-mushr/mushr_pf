@@ -12,7 +12,7 @@ import rospy
 from geometry_msgs.msg import PoseStamped
 from matplotlib import pyplot as plt
 
-import utils as Utils
+import mushr_pf.utils as utils
 
 error_array = []
 pf_array = []
@@ -29,8 +29,8 @@ def callback(true_pose, pf_pose):
     error_x = (true_pose.pose.position.x - pf_pose.pose.position.x) ** 2
     error_y = (true_pose.pose.position.y - pf_pose.pose.position.y) ** 2
     error_t = (
-        Utils.quaternion_to_angle(true_pose.pose.orientation)
-        - Utils.quaternion_to_angle(pf_pose.pose.orientation)
+        utils.quaternion_to_angle(true_pose.pose.orientation)
+        - utils.quaternion_to_angle(pf_pose.pose.orientation)
     ) ** 2
     error_array.append([error_x, error_y, error_t])
     print_array = np.array(error_array)
