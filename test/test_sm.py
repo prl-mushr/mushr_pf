@@ -6,9 +6,8 @@ import matplotlib.pyplot as plt
 import mushr_pf.utils as utils
 import numpy as np
 import rosbag
-from nav_msgs.msg import OccupancyGrid
-
 from mushr_pf.sensor_model import SensorModel
+from nav_msgs.msg import OccupancyGrid
 
 maps = ["hallway", "intersection"]
 print("Running " + str(len(maps)) + " maps")

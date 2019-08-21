@@ -7,12 +7,11 @@
 import time
 
 import message_filters
+import mushr_pf.utils as utils
 import numpy as np
 import rospy
 from geometry_msgs.msg import PoseStamped
 from matplotlib import pyplot as plt
-
-import mushr_pf.utils as utils
 
 error_array = []
 pf_array = []
