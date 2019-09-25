@@ -31,6 +31,8 @@ jobs:
       conda config --set always_yes yes --set changeps1 no
       conda update -q conda
       conda env create --file $(devtools)/lint-env.yaml
+
+      pip install -e .
     displayName: Install dependencies and create Anaconda environment
 
   - bash: |
