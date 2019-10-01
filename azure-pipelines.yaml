@@ -71,7 +71,7 @@ jobs:
 
       # You can add any preamble here (install packages, load configuration, etc.) to setup testing
       export PYTHONPATH=src:$PYTHONPATH
-      pip install matplotlib
+      conda install -c conda-forge matplotlib
 
       python2.7 -m unittest discover -s test
     displayName: Run tests (nose2)

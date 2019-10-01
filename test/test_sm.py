@@ -3,16 +3,17 @@
 # DO NOT EDIT
 
 import matplotlib.pyplot as plt
-import mushr_pf.utils as utils
 import numpy as np
 import rosbag
-from mushr_pf.sensor_model import SensorModel
 from nav_msgs.msg import OccupancyGrid
 
-maps = ["hallway", "intersection"]
-print("Running " + str(len(maps)) + " maps")
+import mushr_pf.utils as utils
+from mushr_pf.sensor_model import SensorModel
 
 if __name__ == "__main__":
+    maps = ["hallway", "intersection"]
+    print("Running " + str(len(maps)) + " maps")
+
     for m in range(0, len(maps)):
 
         # Load laser scan and map from bag

@@ -8,6 +8,7 @@ from threading import Lock
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from mushr_pf.motion_model import KinematicMotionModel
 
 # Radius to count particles around ground truth
