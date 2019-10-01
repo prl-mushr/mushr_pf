@@ -25,14 +25,12 @@ jobs:
       wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       bash miniconda.sh -b -p $HOME/miniconda
       echo "##vso[task.prependpath]$HOME/miniconda/bin"
-    displayName: 'Get conda and add to path'
+    displayName: Get conda and add to path
 
   - bash: |
       conda config --set always_yes yes --set changeps1 no
       conda update -q conda
       conda env create --file $(devtools)/lint-env.yaml
-
-      pip install -e .
     displayName: Install dependencies and create Anaconda environment
 
   - bash: |
@@ -72,6 +70,8 @@ jobs:
       # You can add any preamble here (install packages, load configuration, etc.) to setup testing
       export PYTHONPATH=src:$PYTHONPATH
       conda install -c conda-forge matplotlib
+
+      python2.7 -c 'import sys; print sys.path'
 
       python2.7 -m unittest discover -s test
     displayName: Run tests (nose2)
