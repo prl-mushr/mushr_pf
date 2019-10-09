@@ -32,9 +32,9 @@ jobs:
     condition: succeededOrFailed()
 
   - bash: |
-      sudo echo test
-      sudo apt update
-      sudo apt install --no-install-recommends -y python-tk
+      echo test
+      apt-get update
+      apt-get install --no-install-recommends -y python-tk
 
       mkdir -p /catkin_ws/src/$(Build.Repository.Name)
       cp -r * /catkin_ws/src/$(Build.Repository.Name)
