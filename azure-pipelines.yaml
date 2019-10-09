@@ -41,8 +41,13 @@ jobs:
       cp -r * /catkin_ws/src/$(Build.Repository.Name)
 
       cd /catkin_ws
+      # build
       /ros_entrypoint.sh catkin_make
 
+      # test
       /ros_entrypoint.sh catkin_make run_tests
+
+      # report results
+      /ros_entrypoint.sh catkin_test_results
     displayName: Run tests
     condition: succeededOrFailed()
