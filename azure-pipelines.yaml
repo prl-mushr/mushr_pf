@@ -12,7 +12,6 @@ jobs:
   variables:
     azure_tmpdir: $(Agent.TempDirectory)
     devtools: $(azure_tmpdir)/devtools
-    test_dir: src/testing
 
   container: prlmushr/mushr:bionic
 
@@ -33,8 +32,9 @@ jobs:
     condition: succeededOrFailed()
 
   - bash: |
-      sudo chmod -R 777 /catkin_ws
-      sudo apt-get update && sudo apt-get install --no-install-recommends -y python-tk
+      sudo apt-get update
+      sudo apt-get install --no-install-recommends -y python-tk
+
       mkdir -p /catkin_ws/src/$(Build.Repository.Name)
       cp -r * /catkin_ws/src/$(Build.Repository.Name)
 
