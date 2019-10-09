@@ -32,10 +32,10 @@ jobs:
     condition: succeededOrFailed()
 
   - bash: |
-      sudo apt-get update
-      sudo apt-get install --no-install-recommends -y python-tk
+      set -x
+      sudo apt-get update && sudo apt-get install --no-install-recommends -y python-tk
 
-      sudo usermod -a -G root $(whoami)
+      sudo chown -R $(whoami) /catkin_ws
 
       mkdir -p /catkin_ws/src/$(Build.Repository.Name)
       cp -r * /catkin_ws/src/$(Build.Repository.Name)
