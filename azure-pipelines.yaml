@@ -7,7 +7,7 @@ jobs:
 - job:
   displayName: Run Linting and Tests
   pool:
-    vmImage: 'ubuntu-18.04'
+    vmImage: 'ubuntu-16.04'
 
   variables:
     azure_tmpdir: $(Agent.TempDirectory)
@@ -32,10 +32,10 @@ jobs:
     condition: succeededOrFailed()
 
   - bash: |
-      id
-      echo test
-      apt-get update
-      apt-get install --no-install-recommends -y python-tk
+      sudo apt-get update
+      sudo apt-get install --no-install-recommends -y python-tk
+
+      sudo usermod -a -G root $(whoami)
 
       mkdir -p /catkin_ws/src/$(Build.Repository.Name)
       cp -r * /catkin_ws/src/$(Build.Repository.Name)
