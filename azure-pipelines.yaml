@@ -42,8 +42,9 @@ jobs:
       cp -r * $(CatkinProjectDir)
 
       cd /catkin_ws
-      # build
+      # build and source setup files
       /ros_entrypoint.sh catkin_make
+      source devel/setup.bash
 
       # test
       cd $(CatkinProjectDir)
