@@ -33,7 +33,7 @@ jobs:
     condition: succeededOrFailed()
 
   - bash: |
-      set -x
+      source /opt/ros/melodic/setup.bash
       sudo apt-get update && sudo apt-get install --no-install-recommends -y python-tk
 
       sudo chown -R $(whoami) /catkin_ws
@@ -43,11 +43,11 @@ jobs:
 
       cd /catkin_ws
       # build and source setup files
-      /ros_entrypoint.sh catkin_make
+      catkin_make
       source devel/setup.bash
 
       # test
       cd $(CatkinProjectDir)
-      /ros_entrypoint.sh ./test.sh
+      ./test.sh
     displayName: Run tests
     condition: succeededOrFailed()
