@@ -10,6 +10,7 @@ project(mushr_pf)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
+  vesc_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -194,5 +195,5 @@ include_directories(
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
-# Add folders to be run by python nosetests
-catkin_add_nosetests(test)
+## Add folders to be run by python nosetests
+# catkin_add_nosetests(test)

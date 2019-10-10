@@ -45,9 +45,6 @@ jobs:
       /ros_entrypoint.sh catkin_make
 
       # test
-      /ros_entrypoint.sh catkin_make run_tests
-
-      # report results
-      /ros_entrypoint.sh catkin_test_results
+      /ros_entrypoint.sh src/mushr_pf/tests.sh
     displayName: Run tests
     condition: succeededOrFailed()
