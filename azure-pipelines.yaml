@@ -12,6 +12,7 @@ jobs:
   variables:
     azure_tmpdir: $(Agent.TempDirectory)
     devtools: $(azure_tmpdir)/devtools
+    CatkinProjectDir: /catkin_ws/src/$(Build.Repository.Name)
 
   container: prlmushr/mushr:bionic
 
@@ -37,14 +38,14 @@ jobs:
 
       sudo chown -R $(whoami) /catkin_ws
 
-      mkdir -p /catkin_ws/src/$(Build.Repository.Name)
-      cp -r * /catkin_ws/src/$(Build.Repository.Name)
+      mkdir -p $(CatkinProjectDir)
+      cp -r * $(CatkinProjectDir)
 
       cd /catkin_ws
       # build
       /ros_entrypoint.sh catkin_make
 
       # test
-      /ros_entrypoint.sh src/mushr_pf/test.sh
+      /ros_entrypoint.sh $(CatkinProjectDir)/test.sh
     displayName: Run tests
     condition: succeededOrFailed()
