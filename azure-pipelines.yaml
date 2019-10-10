@@ -46,6 +46,7 @@ jobs:
       /ros_entrypoint.sh catkin_make
 
       # test
-      /ros_entrypoint.sh $(CatkinProjectDir)/test.sh
+      cd $(CatkinProjectDir)
+      /ros_entrypoint.sh ./test.sh
     displayName: Run tests
     condition: succeededOrFailed()
