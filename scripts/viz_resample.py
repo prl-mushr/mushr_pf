@@ -4,6 +4,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from mushr_pf.resample import ReSampler
 
 if __name__ == "__main__":

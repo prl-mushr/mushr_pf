@@ -10,6 +10,7 @@ project(mushr_pf)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
+  vesc_msgs
 )
 
 ## System dependencies are found with CMake's conventions
