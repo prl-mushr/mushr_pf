@@ -35,7 +35,11 @@ class TestMotionModel(unittest.TestCase):
 
         self.num_particles = 100
         self.ctrls = [[1.0, 0.34, 0.1], [3.0, 0.4, 0.5], [3.0, 0.4, 0.5]]
-        self.truths = [[0.09937757, 0.0033936, 0.10634897], [0.76003705, 0.99738116, 1.86917909], [0.7661687, 0.97692261, 1.85254576]]
+        self.truths = [
+            [0.09937757, 0.0033936, 0.10634897],
+            [0.76003705, 0.99738116, 1.86917909],
+            [0.7661687, 0.97692261, 1.85254576],
+        ]
 
     def mm_1(self, mm):
         mm.apply_motion_model(mm.particles, self.ctrls[0])
@@ -65,18 +69,17 @@ class TestMotionModel(unittest.TestCase):
         self.assertTrue(
             np.mean(counts[1]) > 15,
             msg="Mean: %.3f There was a bug in the source code, the particle filter is functional,"
-                "but the RADIUS is either too small, or the parameters chosen are way too"
-                "large (even though the PF is really good)." % np.mean(counts[1]),
+            "but the RADIUS is either too small, or the parameters chosen are way too"
+            "large (even though the PF is really good)." % np.mean(counts[1]),
         )
         self.assertTrue(
             np.mean(counts[2]) > 10,
             msg="Mean: %f There was a bug in the source code, the particle filter is functional,"
-                "but the RADIUS is either too small, or the parameters chosen are way too"
-                "large (even though the PF is really good)." % np.mean(counts[2]),
+            "but the RADIUS is either too small, or the parameters chosen are way too"
+            "large (even though the PF is really good)." % np.mean(counts[2]),
         )
 
         if SHOW_PLOT:
-            print counts
             for i in range(3):
                 # Plot
                 plt.figure()
@@ -90,7 +93,6 @@ class TestMotionModel(unittest.TestCase):
                 start_particles = np.zeros((self.num_particles, 3))
                 mm = self.new_mm(start_particles)
                 mms[i](mm)
-                print model_error(mm.particles, self.truths[i][:2])
                 plt.quiver(
                     mm.particles[:, 0],
                     mm.particles[:, 1],
@@ -112,7 +114,9 @@ class TestMotionModel(unittest.TestCase):
 
                 # Plot radius of acceptance around ground truth
                 ax = plt.gca()
-                ax.add_artist(plt.Circle(self.truths[i][:2], RADIUS, color="g", fill=False))
+                ax.add_artist(
+                    plt.Circle(self.truths[i][:2], RADIUS, color="g", fill=False)
+                )
             plt.show()
 
     def new_mm(self, start_particles):
