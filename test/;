@@ -10,9 +10,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import os
-pf_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'),)
-sys.path.append(pf_path)
-from motion_model import KinematicMotionModel
+pf_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'),))
+sys.path.insert(1, '/path/to/application/app/folder')
+from mushr_pf.motion_model import KinematicMotionModel
 
 # Radius to count particles around ground truth
 RADIUS = 0.25
@@ -61,7 +61,7 @@ class TestMotionModel(unittest.TestCase):
         mms = [self.mm_1, self.mm_2, self.mm_3]
 
         # 99 tests. Hint: set me to 100 to have insight on the question about resampling
-        for i in range(0, 99):
+        for i in range(0, 100):
             start_particles = np.zeros((self.num_particles, 3))
             # Instatiate Your Motion Model
             motion_model = self.new_mm(start_particles)
