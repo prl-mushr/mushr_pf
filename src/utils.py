@@ -10,7 +10,7 @@ import tf.transformations
 from geometry_msgs.msg import Point32, Pose, Quaternion
 from nav_msgs.srv import GetMap
 from std_msgs.msg import Header
-
+from nav_msgs.msg import Odometry
 
 def angle_to_quaternion(angle):
     """
@@ -62,6 +62,38 @@ def particles_to_poses(particles):
         Returns: A list of equivalent geometry_msgs/Pose messages
     """
     return map(particle_to_pose, particles)
+
+def pose_to_particle(pose):
+    """
+      Converts a pose message to a particle
+        pose: The pose to convert - [Point position, Quaternion orientation]
+        Returns: An equivalent particle
+    """
+    particle = [pose.position.x, pose.position.y, quaternion_to_angle(pose.orientation)]
+    return particle
+
+
+def poses_to_particles(poses):
+    """
+      Converts a list of pose messages to a list of particles
+        poses: A list of poses, where each element is itself a Pose
+        Returns: A list of equivalent particles
+    """
+    return map(pose_to_particle, poses)
+
+
+def shortest_angle(curr_theta, prev_theta):
+    """
+      Returns the shortest path delta theta between two given angles in rad such that
+      |curr - prev| <= pi
+        curr_theta: Current angle
+        prev_theta: Previous angle
+        Returns: the smallest difference in angles
+    """
+    diff = curr_theta - prev_theta
+    if np.abs(diff) > np.pi:
+        diff -= np.sign(diff) * 2 * np.pi
+    return diff
 
 
 def make_header(frame_id, stamp=None):

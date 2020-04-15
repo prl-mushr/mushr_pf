@@ -16,11 +16,16 @@ from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 import utils
 from motion_model import KinematicMotionModel
+from camera_motion_model import CameraMotionModel
 from resample import ReSampler
 from sensor_model import SensorModel
 
 MAP_TOPIC = "/map"
 PUBLISH_PREFIX = "/pf"
+CAMERA_ODOM_TOPIC = "/camera/odom/sample"
+
+# Modes: 1-KinematicMM only, 2-CameraMM only, 3-HybridMM
+MODE = 2
 
 
 class ParticleFilter:
@@ -135,18 +140,42 @@ class ParticleFilter:
             self.state_lock,
         )
 
-        # An object used for applying kinematic motion model
-        self.motion_model = KinematicMotionModel(
-            motor_state_topic,
-            servo_state_topic,
-            speed_to_erpm_offset,
-            speed_to_erpm_gain,
-            steering_angle_to_servo_offset,
-            steering_angle_to_servo_gain,
-            car_length,
-            self.particles,
-            self.state_lock,
-        )
+        # An object used for applying motion model
+        if MODE is 1:
+            # Use Kinematic Motion Model Only
+            self.motion_model = KinematicMotionModel(
+                motor_state_topic,
+                servo_state_topic,
+                speed_to_erpm_offset,
+                speed_to_erpm_gain,
+                steering_angle_to_servo_offset,
+                steering_angle_to_servo_gain,
+                car_length,
+                self.particles,
+                self.state_lock,
+            )
+        # Use Camera Motion Model Only
+        elif MODE is 2:
+            self.motion_model = CameraMotionModel(
+                CAMERA_ODOM_TOPIC,
+                self.particles,
+                self.state_lock,
+            )
+        elif MODE is 3:
+        # Use Hybrid Motion Model
+            self.motion_model = KinematicMotionModel( # Will be updated to be hybrid model
+                motor_state_topic,
+                servo_state_topic,
+                speed_to_erpm_offset,
+                speed_to_erpm_gain,
+                steering_angle_to_servo_offset,
+                steering_angle_to_servo_gain,
+                car_length,
+                self.particles,
+                self.state_lock,
+            )
+
+
 
         self.permissible_x, self.permissible_y = np.where(self.permissible_region == 1)
 
