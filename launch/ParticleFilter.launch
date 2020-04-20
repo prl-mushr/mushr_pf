@@ -22,4 +22,6 @@
         <param name="exclude_max_range_rays" value="$(arg exclude_max_range_rays)" />
         <param name="max_range_meters" value="$(arg max_range_meters)" />
 	</node>
+    <node pkg="mushr_pf" name="camera_tf" type="camera_tf.py"/>
+    <include file="$(find mushr_pf)/launch/mushr_cam.launch"/> 
 </launch>
