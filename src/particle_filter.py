@@ -24,8 +24,8 @@ MAP_TOPIC = "/map"
 PUBLISH_PREFIX = "/pf"
 CAMERA_ODOM_TOPIC = "/camera/odom/sample"
 
-# Modes: 1-KinematicMM only, 2-CameraMM only, 3-HybridMM
-MODE = 2
+# Modes: 1-"kinematic", 2-"camera", 3-"hybrid"
+# MODE = 2
 
 
 class ParticleFilter:
@@ -35,6 +35,7 @@ class ParticleFilter:
 
     def __init__(
         self,
+        filter_mode,
         publish_tf,
         n_particles,
         n_viz_particles,
@@ -53,6 +54,7 @@ class ParticleFilter:
     ):
         """
           Initializes the particle filter
+            filter_mode: What motion model to use for particle filtee (Kinematic, Camera, or Hybrid)
             publish_tf: Whether or not to publish the tf. Should be false in sim, true on real robot
             n_particles: The number of particles
             n_viz_particles: The number of particles to visualize
@@ -69,6 +71,7 @@ class ParticleFilter:
             steering_angle_to_servo_gain: Gain conversion param from servo position to steering angle
             car_length: The length of the car
         """
+        self.MODE = filter_mode
         self.PUBLISH_TF = publish_tf
         # The number of particles in this implementation, the total number of particles is constant.
         self.N_PARTICLES = n_particles
@@ -86,10 +89,12 @@ class ParticleFilter:
 
         self.tfl = tf.TransformListener()  # Transforms points between coordinate frames
 
+        print("Waiting on map...")
         # Get the map
         map_msg = rospy.wait_for_message(MAP_TOPIC, OccupancyGrid)
         self.map_info = map_msg.info  # Save info about map for later use
-
+        print("Map received")
+        
         # Create numpy array representing map for later use
         array_255 = np.array(map_msg.data).reshape(
             (map_msg.info.height, map_msg.info.width)
@@ -141,8 +146,9 @@ class ParticleFilter:
         )
 
         # An object used for applying motion model
-        if MODE is 1:
+        if self.MODE == "kinematic":
             # Use Kinematic Motion Model Only
+            print("Kinematic Motion Model")
             self.motion_model = KinematicMotionModel(
                 motor_state_topic,
                 servo_state_topic,
@@ -155,14 +161,16 @@ class ParticleFilter:
                 self.state_lock,
             )
         # Use Camera Motion Model Only
-        elif MODE is 2:
+        elif self.MODE == "camera":
+            print("Camera Motion Model")
             self.motion_model = CameraMotionModel(
                 CAMERA_ODOM_TOPIC,
                 self.particles,
                 self.state_lock,
             )
-        elif MODE is 3:
+        elif self.MODE == "hybrid":
         # Use Hybrid Motion Model
+            print("Hybrid Motion Model")
             self.motion_model = KinematicMotionModel( # Will be updated to be hybrid model
                 motor_state_topic,
                 servo_state_topic,
@@ -491,7 +499,8 @@ class ParticleFilter:
 # Suggested main
 if __name__ == "__main__":
     rospy.init_node("particle_filter", anonymous=True)  # Initialize the node
-
+    filter_mode = rospy.get_param("~filter_mode")
+    
     publish_tf = bool(rospy.get_param("~publish_tf"))
     n_particles = int(rospy.get_param("~n_particles"))  # The number of particles
     # The number of particles to visualize
@@ -531,6 +540,7 @@ if __name__ == "__main__":
 
     # Create the particle filter
     pf = ParticleFilter(
+        filter_mode,
         publish_tf,
         n_particles,
         n_viz_particles,

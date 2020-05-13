@@ -2,4 +2,9 @@
     <include file="$(find mushr_pf)/launch/ParticleFilter.launch">
         <arg name="publish_tf" value="false" />
     </include>
+
+    <!-- Launch  map server-->
+    <include file="$(find mushr_sim)/launch/map_server.launch">
+    	<arg name="map" value="$(find mushr_sim)/maps/real-floor0.yaml" />
+    </include>
 </launch>
