@@ -7,8 +7,9 @@ from threading import Lock
 
 import numpy as np
 import rospy
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Float32
 from vesc_msgs.msg import VescStateStamped
+from ackermann_msgs.msg import AckermannDriveStamped
 
 # Tune these Values!
 KM_V_NOISE = 0.4  # Kinematic car velocity noise std dev
@@ -87,13 +88,45 @@ class KinematicMotionModel:
             self.state_lock = state_lock
 
         # This subscriber just caches the most recent servo position command
-        self.servo_pos_sub = rospy.Subscriber(
-            servo_state_topic, Float64, self.servo_cb, queue_size=1
-        )
+#        self.servo_pos_sub = rospy.Subscriber(
+ #           servo_state_topic, Float64, self.servo_cb, queue_size=1
+  #      )
         # Subscribe to the state of the vesc
-        self.motion_sub = rospy.Subscriber(
-            motor_state_topic, VescStateStamped, self.motion_cb, queue_size=1
+#        self.motion_sub = rospy.Subscriber(
+#            motor_state_topic, VescStateStamped, self.motion_cb, queue_size=1
+#        )
+
+        # Temporary sub to take state directly from teleop
+        self.input_sub = rospy.Subscriber(
+            "/mux/ackermann_cmd_mux/input/teleop", AckermannDriveStamped, self.input_cb, queue_size=1
         )
+
+    def input_cb(self, msg):
+        self.state_lock.acquire()
+        if self.last_vesc_stamp is None:
+            print("Vesc callback called for first time....")
+            self.last_vesc_stamp = rospy.Time.now()
+            self.state_lock.release()
+            return
+
+        curr_speed = msg.drive.speed
+        
+#        print "speed: ", curr_speed
+        
+        curr_steering_angle = msg.drive.steering_angle
+        
+        dt = (rospy.Time.now() - self.last_vesc_stamp).to_sec()
+#        print rospy.Time.now(), self.last_vesc_stamp
+#        print(curr_speed, curr_steering_angle, dt)
+        
+        # Propagate particles forward in place
+        self.apply_motion_model(
+            proposal_dist=self.particles, control=[curr_speed, curr_steering_angle, dt]
+        )
+
+        self.last_vesc_stamp = rospy.Time.now()
+        self.state_lock.release()
+        
 
     """
     Caches the most recent servo command
@@ -101,7 +134,8 @@ class KinematicMotionModel:
   """
 
     def servo_cb(self, msg):
-        self.last_servo_cmd = msg.data  # Update servo command
+        self.last_servo_cmd = msg.data
+
 
     """
     Converts messages to controls and applies the kinematic car model to the
