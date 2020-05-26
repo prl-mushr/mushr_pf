@@ -25,7 +25,6 @@ PUBLISH_PREFIX = "/pf"
 CAMERA_ODOM_TOPIC = "/camera/odom/sample"
 
 # Modes: 1-"kinematic", 2-"camera", 3-"hybrid"
-# MODE = 2
 
 
 class ParticleFilter:
@@ -89,11 +88,11 @@ class ParticleFilter:
 
         self.tfl = tf.TransformListener()  # Transforms points between coordinate frames
 
-        print("Waiting on map...")
+        print("particle_filter: Waiting on map...")
         # Get the map
         map_msg = rospy.wait_for_message(MAP_TOPIC, OccupancyGrid)
         self.map_info = map_msg.info  # Save info about map for later use
-        print("Map received")
+        print("particle_filter: Map received")
         
         # Create numpy array representing map for later use
         array_255 = np.array(map_msg.data).reshape(
@@ -104,7 +103,6 @@ class ParticleFilter:
         self.permissible_region[array_255 == 0] = 1
 
         # Globally initialize the particles
-
         # Publish particle filter state
         # Used to create a tf between the map and the laser for visualization
         self.pub_tf = tf.TransformBroadcaster()
@@ -125,8 +123,10 @@ class ParticleFilter:
         self.pub_odom = rospy.Publisher(
             PUBLISH_PREFIX + "/odom", Odometry, queue_size=1
         )
+        print("particle_filter: Subs and pubs initialized. Sleeping for 1 second (allow clock to run if using rosbag)")
 
         rospy.sleep(1.0)
+        print("particle_filter: Initializing Everything Else")
         self.initialize_global()
 
         # An object used for resampling
@@ -148,7 +148,7 @@ class ParticleFilter:
         # An object used for applying motion model
         if self.MODE == "kinematic":
             # Use Kinematic Motion Model Only
-            print("Kinematic Motion Model")
+            print("particle_filter: Kinematic Motion Model")
             self.motion_model = KinematicMotionModel(
                 motor_state_topic,
                 servo_state_topic,
@@ -162,7 +162,7 @@ class ParticleFilter:
             )
         # Use Camera Motion Model Only
         elif self.MODE == "camera":
-            print("Camera Motion Model")
+            print("particle_filter: Camera Motion Model")
             self.motion_model = CameraMotionModel(
                 CAMERA_ODOM_TOPIC,
                 self.particles,
@@ -170,7 +170,7 @@ class ParticleFilter:
             )
         elif self.MODE == "hybrid":
         # Use Hybrid Motion Model
-            print("Hybrid Motion Model")
+            print("particle_filter: Hybrid Motion Model")
             self.motion_model = KinematicMotionModel( # Will be updated to be hybrid model
                 motor_state_topic,
                 servo_state_topic,
@@ -226,9 +226,9 @@ class ParticleFilter:
         self.init_sub = rospy.Subscriber(
             "/initialpose", PoseWithCovarianceStamped, self.reinit_cb, queue_size=1
         )
-
+        print("particle_filter: Done, just waiting for laser scan")
         rospy.wait_for_message(scan_topic, LaserScan)
-        print("Initialization complete")
+        print("particle_filter: Initialization complete")
 
     def initialize_global(self):
         """
@@ -450,7 +450,7 @@ class ParticleFilter:
 
     def global_localization(self):
         self.sensor_model.reset_confidence()
-
+#        return
         candidate_num = self.particles.shape[0] / self.NUM_REGIONS
         regional_particles = []
         regional_weights = []
