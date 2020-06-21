@@ -1,5 +1,5 @@
 <launch>
-    <include file="$(find mushr_pf)/launch/ParticleFilter.launch">
+    <include file="$(find mushr_pf)/launch/particle_filter.launch">
         <arg name="publish_tf" value="false" />
 	<arg name="filter_mode" value="camera" />
     </include>

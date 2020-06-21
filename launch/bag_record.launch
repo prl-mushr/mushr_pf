@@ -1,0 +1,4 @@
+
+<launch>
+ <node pkg="rosbag" type="record" name="record" output="screen" args="-a -O ~/catkin_ws/src/mushr_pf/bags/out.bag -e fisheye2"/>
+</launch>
