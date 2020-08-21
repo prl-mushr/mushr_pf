@@ -3,6 +3,12 @@
 # Copyright (c) 2019, The Personal Robotics Lab, The MuSHR Team, The Contributors of MuSHR
 # License: BSD 3-Clause. See LICENSE.md file in root directory.
 
+"""
+    Uses differential positions in odometry output of the T265 Camera to propagate particles forward.
+    Remember to integrate wheel odometry into T265 in order to get robust localization.
+    Read integration_notes document for details.
+"""
+
 from threading import Lock
 
 import numpy as np
@@ -20,18 +26,6 @@ CAM_Y_FIX_NOISE = 5e-2  # Camera delta y constant noise std dev
 CAM_THETA_FIX_NOISE = 5e-2  # Camera delta theta constant noise std dev
 CAM_MAG_NOISE_PERCENT = 0.1 # Camera odom offset percentage noise. Equivalend to KM_V_NOISE
 
-# KM noise for reference
-#KM_V_NOISE = 0.4  # Kinematic car velocity noise std dev. 0.4 is 20% noise since speed is 2m/s
-#KM_DELTA_NOISE = 0.2  # Kinematic car delta noise std dev
-#KM_X_FIX_NOISE = 3e-2  # Kinematic car x position constant noise std dev
-#KM_Y_FIX_NOISE = 3e-2  # Kinematic car y position constant noise std dev
-#KM_THETA_FIX_NOISE = 1e-1  # Kinematic car theta constant noise std dev
-
-
-#KM_X_FIX_NOISE = 3e-2  # Camera delta x constant noise std dev
-#KM_Y_FIX_NOISE = 3e-2  # Camera delta y constant noise std dev
-#KM_THETA_FIX_NOISE = 1e-1  # Camera delta theta constant noise std dev
-
 
 """
   Propagates the particles forward based on the odometry of the camera
@@ -42,8 +36,8 @@ class CameraMotionModel:
 
     """
     Initializes the kinematic motion model
-      camera_odom_topic: 
-      # Add a transform for the camera and the car base at some point  in the future
+      camera_odom_topic: Topic to read odometry output of T265
+      # TODO: Add a transform for the camera and the car base at some point  in the future
       particles: The particles to propagate forward
       state_lock: Controls access to particles
     """

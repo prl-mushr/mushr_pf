@@ -24,7 +24,11 @@ MAP_TOPIC = "/map"
 PUBLISH_PREFIX = "/pf"
 CAMERA_ODOM_TOPIC = "/camera/odom/sample"
 
-# Modes: 1-"kinematic", 2-"camera", 3-"hybrid"
+"""
+    This version of particle_filter has been modified to take in a string specifying a type of motion model,
+    between "Kinematic", "Camera", or "Hybrid" (the hybrid motion model has not yet been built yet). See
+    the integration_notes document for details.
+"""
 
 
 class ParticleFilter:
@@ -169,7 +173,7 @@ class ParticleFilter:
                 self.state_lock,
             )
         elif self.MODE == "hybrid":
-        # Use Hybrid Motion Model
+        # Use Hybrid Motion Model (NOT YET BUILT)
             print("particle_filter: Hybrid Motion Model")
             self.motion_model = KinematicMotionModel( # Will be updated to be hybrid model
                 motor_state_topic,
