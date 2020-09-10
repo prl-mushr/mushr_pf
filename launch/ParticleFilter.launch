@@ -9,6 +9,7 @@
     <arg name="laser_ray_step" default="18"/> 
     <arg name="exclude_max_range_rays" default="true"/>
     <arg name="max_range_meters" default="11.0" />
+    <arg name="car_name" default="/car" />
 	
     <node pkg="mushr_pf" type="particle_filter.py" name="particle_filter" output="screen">
         <param name="publish_tf" value="$(arg publish_tf)" />
@@ -21,5 +22,6 @@
         <param name="laser_ray_step" value="$(arg laser_ray_step)"/>
         <param name="exclude_max_range_rays" value="$(arg exclude_max_range_rays)" />
         <param name="max_range_meters" value="$(arg max_range_meters)" />
+        <param name="car_name" value="$(arg car_name)" />
 	</node>
 </launch>
