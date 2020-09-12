@@ -45,7 +45,7 @@ class ParticleFilter:
         steering_angle_to_servo_offset,
         steering_angle_to_servo_gain,
         car_length,
-        car_name
+        car_name,
     ):
         """
         Initializes the particle filter
@@ -524,7 +524,7 @@ if __name__ == "__main__":
         steering_angle_to_servo_offset,
         steering_angle_to_servo_gain,
         car_length,
-        car_name
+        car_name,
     )
     while not rospy.is_shutdown():  # Keep going until we kill it
         # Callbacks are running in separate threads
