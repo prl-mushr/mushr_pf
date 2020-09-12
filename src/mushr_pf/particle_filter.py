@@ -25,7 +25,7 @@ PUBLISH_PREFIX = "/pf"
 
 class ParticleFilter:
     """
-      Implements particle filtering for estimating the state of the robot car
+    Implements particle filtering for estimating the state of the robot car
     """
 
     def __init__(
@@ -45,25 +45,25 @@ class ParticleFilter:
         steering_angle_to_servo_offset,
         steering_angle_to_servo_gain,
         car_length,
-        car_name
+        car_name,
     ):
         """
-          Initializes the particle filter
-            publish_tf: Whether or not to publish the tf. Should be false in sim, true on real robot
-            n_particles: The number of particles
-            n_viz_particles: The number of particles to visualize
-            odometry_topic: The topic containing odometry information
-            motor_state_topic: The topic containing motor state information
-            servo_state_topic: The topic containing servo state information
-            scan_topic: The topic containing laser scans
-            laser_ray_step: Step for downsampling laser scans
-            exclude_max_range_rays: Whether to exclude rays that are beyond the max range
-            max_range_meters: The max range of the laser
-            speed_to_erpm_offset: Offset conversion param from rpm to speed
-            speed_to_erpm_gain: Gain conversion param from rpm to speed
-            steering_angle_to_servo_offset: Offset conversion param from servo position to steering angle
-            steering_angle_to_servo_gain: Gain conversion param from servo position to steering angle
-            car_length: The length of the car
+        Initializes the particle filter
+          publish_tf: Whether or not to publish the tf. Should be false in sim, true on real robot
+          n_particles: The number of particles
+          n_viz_particles: The number of particles to visualize
+          odometry_topic: The topic containing odometry information
+          motor_state_topic: The topic containing motor state information
+          servo_state_topic: The topic containing servo state information
+          scan_topic: The topic containing laser scans
+          laser_ray_step: Step for downsampling laser scans
+          exclude_max_range_rays: Whether to exclude rays that are beyond the max range
+          max_range_meters: The max range of the laser
+          speed_to_erpm_offset: Offset conversion param from rpm to speed
+          speed_to_erpm_gain: Gain conversion param from rpm to speed
+          steering_angle_to_servo_offset: Offset conversion param from servo position to steering angle
+          steering_angle_to_servo_gain: Gain conversion param from servo position to steering angle
+          car_length: The length of the car
         """
         self.PUBLISH_TF = publish_tf
         # The number of particles in this implementation, the total number of particles is constant.
@@ -371,8 +371,8 @@ class ParticleFilter:
 
     def publish_particles(self, particles):
         """
-          Helper function for publishing a pose array of particles
-            particles: To particles to publish
+        Helper function for publishing a pose array of particles
+          particles: To particles to publish
         """
         pa = PoseArray()
         pa.header = utils.make_header("map")
@@ -524,7 +524,7 @@ if __name__ == "__main__":
         steering_angle_to_servo_offset,
         steering_angle_to_servo_gain,
         car_length,
-        car_name
+        car_name,
     )
     while not rospy.is_shutdown():  # Keep going until we kill it
         # Callbacks are running in separate threads

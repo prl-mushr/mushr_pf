@@ -11,7 +11,12 @@ from threading import Lock
 import matplotlib.pyplot as plt
 import numpy as np
 
-from mushr_pf.motion_model import KinematicMotionModel
+from motion_model import KinematicMotionModel
+
+pf_path = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../src"),
+)
+sys.path.append(pf_path)
 
 pf_path = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../src"),

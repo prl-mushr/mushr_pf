@@ -50,7 +50,7 @@ class KinematicMotionModel:
       car_length: The length of the car
       particles: The particles to propagate forward
       state_lock: Controls access to particles
-  """
+    """
 
     def __init__(
         self,
@@ -68,17 +68,13 @@ class KinematicMotionModel:
         self.last_vesc_stamp = None  # The time stamp from the previous vesc state msg
         self.particles = particles
         self.SPEED_TO_ERPM_OFFSET = (
-            speed_to_erpm_offset
-        )  # Offset conversion param from rpm to speed
+            speed_to_erpm_offset  # Offset conversion param from rpm to speed
+        )
         self.SPEED_TO_ERPM_GAIN = (
-            speed_to_erpm_gain
-        )  # Gain conversion param from rpm to speed
-        self.STEERING_TO_SERVO_OFFSET = (
-            steering_to_servo_offset
-        )  # Offset conversion param from servo position to steering angle
-        self.STEERING_TO_SERVO_GAIN = (
-            steering_to_servo_gain
-        )  # Gain conversion param from servo position to steering angle
+            speed_to_erpm_gain  # Gain conversion param from rpm to speed
+        )
+        self.STEERING_TO_SERVO_OFFSET = steering_to_servo_offset  # Offset conversion param from servo position to steering angle
+        self.STEERING_TO_SERVO_GAIN = steering_to_servo_gain  # Gain conversion param from servo position to steering angle
         self.CAR_LENGTH = car_length  # The length of the car
 
         if state_lock is None:
