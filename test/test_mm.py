@@ -3,10 +3,10 @@
 # DO NOT EDIT
 
 import math
-import unittest
-from threading import Lock
 import os
 import sys
+import unittest
+from threading import Lock
 
 import matplotlib.pyplot as plt
 import numpy as np
