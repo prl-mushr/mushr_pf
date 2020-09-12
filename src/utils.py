@@ -14,18 +14,18 @@ from std_msgs.msg import Header
 
 def angle_to_quaternion(angle):
     """
-      Convert yaw angle in radians into a quaternion message
-        angle: The yaw angle
-        Returns: An equivalent geometry_msgs/Quaternion message
+    Convert yaw angle in radians into a quaternion message
+      angle: The yaw angle
+      Returns: An equivalent geometry_msgs/Quaternion message
     """
     return Quaternion(*tf.transformations.quaternion_from_euler(0, 0, angle))
 
 
 def quaternion_to_angle(q):
     """
-      Convert a quaternion message into a yaw angle in radians.
-        q: A geometry_msgs/Quaternion message
-        Returns: The equivalent yaw angle
+    Convert a quaternion message into a yaw angle in radians.
+      q: A geometry_msgs/Quaternion message
+      Returns: The equivalent yaw angle
     """
     x, y, z, w = q.x, q.y, q.z, q.w
     roll, pitch, yaw = tf.transformations.euler_from_quaternion((x, y, z, w))
@@ -34,9 +34,9 @@ def quaternion_to_angle(q):
 
 def rotation_matrix(theta):
     """
-      Constructs a rotation matrix from a given angle in radians
-        theta: The angle in radians
-        Returns: The equivalent 2x2 numpy rotation matrix
+    Constructs a rotation matrix from a given angle in radians
+      theta: The angle in radians
+      Returns: The equivalent 2x2 numpy rotation matrix
     """
     c, s = np.cos(theta), np.sin(theta)
     return np.matrix([[c, -s], [s, c]])
@@ -44,9 +44,9 @@ def rotation_matrix(theta):
 
 def particle_to_pose(particle):
     """
-      Converts a particle to a pose message
-        particle: The particle to convert - [x,y,theta]
-        Returns: An equivalent geometry_msgs/Pose
+    Converts a particle to a pose message
+      particle: The particle to convert - [x,y,theta]
+      Returns: An equivalent geometry_msgs/Pose
     """
     pose = Pose()
     pose.position.x = particle[0]
@@ -57,20 +57,20 @@ def particle_to_pose(particle):
 
 def particles_to_poses(particles):
     """
-      Converts a list of particles to a list of pose messages
-        particles: A list of particles, where each element is itself a list of the form [x,y,theta]
-        Returns: A list of equivalent geometry_msgs/Pose messages
+    Converts a list of particles to a list of pose messages
+      particles: A list of particles, where each element is itself a list of the form [x,y,theta]
+      Returns: A list of equivalent geometry_msgs/Pose messages
     """
     return map(particle_to_pose, particles)
 
 
 def make_header(frame_id, stamp=None):
     """
-      Creates a header with the given frame_id and stamp. Default value of stamp is
-      None, which results in a stamp denoting the time at which this function was called
-        frame_id: The desired coordinate frame
-        stamp: The desired stamp
-        Returns: The resulting header
+    Creates a header with the given frame_id and stamp. Default value of stamp is
+    None, which results in a stamp denoting the time at which this function was called
+      frame_id: The desired coordinate frame
+      stamp: The desired stamp
+      Returns: The resulting header
     """
     if stamp is None:
         stamp = rospy.Time.now()
@@ -82,9 +82,9 @@ def make_header(frame_id, stamp=None):
 
 def point(npt):
     """
-      Converts a list with coordinates into a point message
-      npt: A list of length two containing x and y coordinates
-      Returns: A geometry_msgs/Point32 message
+    Converts a list with coordinates into a point message
+    npt: A list of length two containing x and y coordinates
+    Returns: A geometry_msgs/Point32 message
     """
     pt = Point32()
     pt.x = npt[0]
@@ -94,15 +94,15 @@ def point(npt):
 
 def points(arr):
     """
-      Converts a list of coordinates into a list of equivalent point messages
-      arr: A list of coordinates, where each element is itself a two dimensional list
-      Returns: A list of geometry_msgs/Point32 messages
+    Converts a list of coordinates into a list of equivalent point messages
+    arr: A list of coordinates, where each element is itself a two dimensional list
+    Returns: A list of geometry_msgs/Point32 messages
     """
     return map(point, arr)
 
 
 def get_map(map_topic):
-    """ Get the map from the map server
+    """Get the map from the map server
     In:
       map_topic: The service topic that will provide the map
     Out:

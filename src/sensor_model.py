@@ -40,15 +40,15 @@ class SensorModel:
     ):
 
         """
-          Initializes the sensor model
-            scan_topic: The topic containing laser scans
-            laser_ray_step: Step for downsampling laser scans
-            exclude_max_range_rays: Whether to exclude rays that are beyond the max range
-            max_range_meters: The max range of the laser
-            map_msg: A nav_msgs/MapMetaData msg containing the map to use
-            particles: The particles to be weighted
-            weights: The weights of the particles
-            state_lock: Used to control access to particles and weights
+        Initializes the sensor model
+          scan_topic: The topic containing laser scans
+          laser_ray_step: Step for downsampling laser scans
+          exclude_max_range_rays: Whether to exclude rays that are beyond the max range
+          max_range_meters: The max range of the laser
+          map_msg: A nav_msgs/MapMetaData msg containing the map to use
+          particles: The particles to be weighted
+          weights: The weights of the particles
+          state_lock: Used to control access to particles and weights
         """
         if state_lock is None:
             self.state_lock = Lock()
@@ -59,9 +59,7 @@ class SensorModel:
         self.weights = weights
 
         self.LASER_RAY_STEP = laser_ray_step  # Step for downsampling laser scans
-        self.EXCLUDE_MAX_RANGE_RAYS = (
-            exclude_max_range_rays
-        )  # Whether to exclude rays that are beyond the max range
+        self.EXCLUDE_MAX_RANGE_RAYS = exclude_max_range_rays  # Whether to exclude rays that are beyond the max range
         self.MAX_RANGE_METERS = max_range_meters  # The max range of the laser
         self.CAR_LENGTH = car_length
 

@@ -40,9 +40,7 @@ if __name__ == "__main__":
         permissible_region = np.zeros_like(array_255, dtype=bool)
         permissible_region[
             array_255 == 0
-        ] = (
-            1
-        )  # Numpy array of dimension (map_msg.info.height, map_msg.info.width),# With values 0: not permissible, 1: permissible
+        ] = 1  # Numpy array of dimension (map_msg.info.height, map_msg.info.width),# With values 0: not permissible, 1: permissible
         permissible_x, permissible_y = np.where(permissible_region == 1)
 
         # Potentially downsample permissible_x and permissible_y here

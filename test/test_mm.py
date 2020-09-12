@@ -13,7 +13,9 @@ import numpy as np
 
 from motion_model import KinematicMotionModel
 
-pf_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'),)
+pf_path = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../src"),
+)
 sys.path.append(pf_path)
 
 # Radius to count particles around ground truth
