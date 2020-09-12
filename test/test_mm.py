@@ -18,11 +18,6 @@ pf_path = os.path.abspath(
 )
 sys.path.append(pf_path)
 
-pf_path = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../src"),
-)
-sys.path.append(pf_path)
-
 # Radius to count particles around ground truth
 RADIUS = 0.25
 SHOW_PLOT = False
