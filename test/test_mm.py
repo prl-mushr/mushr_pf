@@ -11,12 +11,12 @@ from threading import Lock
 import matplotlib.pyplot as plt
 import numpy as np
 
-from motion_model import KinematicMotionModel
-
 pf_path = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../src"),
+    os.path.join(os.path.dirname(__file__), "../src/mushr_pf/"),
 )
 sys.path.append(pf_path)
+
+from motion_model import KinematicMotionModel
 
 # Radius to count particles around ground truth
 RADIUS = 0.25
