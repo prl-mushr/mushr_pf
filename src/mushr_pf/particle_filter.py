@@ -45,6 +45,7 @@ class ParticleFilter:
         steering_angle_to_servo_offset,
         steering_angle_to_servo_gain,
         car_length,
+        car_name
     ):
         """
         Initializes the particle filter
@@ -76,6 +77,9 @@ class ParticleFilter:
         # Numpy matrix containing weight for each particle
         self.weights = np.ones(self.N_PARTICLES) / float(self.N_PARTICLES)
 
+        # Name of car
+        self.name = car_name
+
         # A lock used to prevent concurrency issues. You do not need to worry about this
         self.state_lock = Lock()
 
@@ -101,19 +105,19 @@ class ParticleFilter:
 
         # Publishes the expected pose
         self.pose_pub = rospy.Publisher(
-            PUBLISH_PREFIX + "/inferred_pose", PoseStamped, queue_size=1
+            self.name + PUBLISH_PREFIX + "/inferred_pose", PoseStamped, queue_size=1
         )
         # Publishes a subsample of the particles
         self.particle_pub = rospy.Publisher(
-            PUBLISH_PREFIX + "/particles", PoseArray, queue_size=1
+            self.name + PUBLISH_PREFIX + "/particles", PoseArray, queue_size=1
         )
         # Publishes the most recent laser scan
         self.pub_laser = rospy.Publisher(
-            PUBLISH_PREFIX + "/scan", LaserScan, queue_size=1
+            self.name + PUBLISH_PREFIX + "/scan", LaserScan, queue_size=1
         )
         # Publishes the path of the car
         self.pub_odom = rospy.Publisher(
-            PUBLISH_PREFIX + "/odom", Odometry, queue_size=1
+            self.name + PUBLISH_PREFIX + "/odom", Odometry, queue_size=1
         )
 
         rospy.sleep(1.0)
@@ -500,15 +504,18 @@ if __name__ == "__main__":
     # The length of the car
     car_length = float(rospy.get_param("/car_kinematics/car_length", 0.33))
 
+    # Car name
+    car_name = rospy.get_param("~car_name")
+
     # Create the particle filter
     pf = ParticleFilter(
         publish_tf,
         n_particles,
         n_viz_particles,
-        odometry_topic,
-        motor_state_topic,
-        servo_state_topic,
-        scan_topic,
+        car_name + odometry_topic,
+        car_name + motor_state_topic,
+        car_name + servo_state_topic,
+        car_name + scan_topic,
         laser_ray_step,
         exclude_max_range_rays,
         max_range_meters,
@@ -517,8 +524,8 @@ if __name__ == "__main__":
         steering_angle_to_servo_offset,
         steering_angle_to_servo_gain,
         car_length,
+        car_name
     )
-
     while not rospy.is_shutdown():  # Keep going until we kill it
         # Callbacks are running in separate threads
 

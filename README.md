@@ -13,7 +13,7 @@ Nansong Yi
 **Note:** If you are not using the default mushr image then you will need to install [rangelibc](https://github.com/kctess5/range_libc).
 
 Clone repo:
-`cd ~/catkin_ws && git clone git@github.com:prl-mushr/mushr_pf.git`
+`cd ~/catkin_ws/src/ && git clone git@github.com:prl-mushr/mushr_pf.git`
 
 ### Running the PF
 The `publish_tf` flag needs to be *false* when running in *Simulation* (as the simulation will publish the TFs), and *true* when running on the car:
