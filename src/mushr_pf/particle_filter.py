@@ -103,21 +103,13 @@ class ParticleFilter:
         self.pub_tf = tf.TransformBroadcaster()
 
         # Publishes the expected pose
-        self.pose_pub = rospy.Publisher(
-            "~inferred_pose", PoseStamped, queue_size=1
-        )
+        self.pose_pub = rospy.Publisher("~inferred_pose", PoseStamped, queue_size=1)
         # Publishes a subsample of the particles
-        self.particle_pub = rospy.Publisher(
-            "~particles", PoseArray, queue_size=1
-        )
+        self.particle_pub = rospy.Publisher("~particles", PoseArray, queue_size=1)
         # Publishes the most recent laser scan
-        self.pub_laser = rospy.Publisher(
-            "~scan", LaserScan, queue_size=1
-        )
+        self.pub_laser = rospy.Publisher("~scan", LaserScan, queue_size=1)
         # Publishes the path of the car
-        self.pub_odom = rospy.Publisher(
-            "~odom", Odometry, queue_size=1
-        )
+        self.pub_odom = rospy.Publisher("~odom", Odometry, queue_size=1)
 
         rospy.sleep(1.0)
         self.initialize_global()
