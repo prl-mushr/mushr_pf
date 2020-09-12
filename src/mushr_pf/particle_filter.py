@@ -20,7 +20,6 @@ from resample import ReSampler
 from sensor_model import SensorModel
 
 MAP_TOPIC = "/map"
-PUBLISH_PREFIX = "/pf"
 
 
 class ParticleFilter:
@@ -105,19 +104,19 @@ class ParticleFilter:
 
         # Publishes the expected pose
         self.pose_pub = rospy.Publisher(
-            self.name + PUBLISH_PREFIX + "/inferred_pose", PoseStamped, queue_size=1
+            "~inferred_pose", PoseStamped, queue_size=1
         )
         # Publishes a subsample of the particles
         self.particle_pub = rospy.Publisher(
-            self.name + PUBLISH_PREFIX + "/particles", PoseArray, queue_size=1
+            "~particles", PoseArray, queue_size=1
         )
         # Publishes the most recent laser scan
         self.pub_laser = rospy.Publisher(
-            self.name + PUBLISH_PREFIX + "/scan", LaserScan, queue_size=1
+            "~scan", LaserScan, queue_size=1
         )
         # Publishes the path of the car
         self.pub_odom = rospy.Publisher(
-            self.name + PUBLISH_PREFIX + "/odom", Odometry, queue_size=1
+            "~odom", Odometry, queue_size=1
         )
 
         rospy.sleep(1.0)

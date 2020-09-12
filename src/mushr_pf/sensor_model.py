@@ -59,7 +59,9 @@ class SensorModel:
         self.weights = weights
 
         self.LASER_RAY_STEP = laser_ray_step  # Step for downsampling laser scans
-        self.EXCLUDE_MAX_RANGE_RAYS = exclude_max_range_rays  # Whether to exclude rays that are beyond the max range
+        self.EXCLUDE_MAX_RANGE_RAYS = (
+            exclude_max_range_rays  # Whether to exclude rays beyond the max range
+        )
         self.MAX_RANGE_METERS = max_range_meters  # The max range of the laser
         self.CAR_LENGTH = car_length
 
