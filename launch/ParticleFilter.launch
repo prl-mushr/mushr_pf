@@ -11,7 +11,7 @@
     <arg name="max_range_meters" default="11.0" />
     <arg name="car_name" default="/car" />
 	
-    <group ns="$(car_name)">
+    <group ns="$(arg car_name)">
         <node pkg="mushr_pf" type="particle_filter.py" name="particle_filter" output="screen">
             <param name="publish_tf" value="$(arg publish_tf)" />
             <param name="n_particles" value="$(arg n_particles)"/>
