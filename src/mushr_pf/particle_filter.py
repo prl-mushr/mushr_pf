@@ -246,7 +246,7 @@ class ParticleFilter:
         try:
             # Lookup the offset between laser and odom
             delta_off, delta_rot = self.tfl.lookupTransform(
-                "/laser_link", "/odom", rospy.Time(0)
+                self.name +"/laser_link", self.name +"/odom", rospy.Time(0)
             )
 
             # Transform offset to be w.r.t the map
@@ -260,7 +260,7 @@ class ParticleFilter:
                     0, 0, pose[2] + euler_from_quaternion(delta_rot)[2]
                 ),
                 stamp,
-                "/odom",
+                self.name +"/odom",
                 "/map",
             )
 
