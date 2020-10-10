@@ -16,8 +16,10 @@ Clone repo:
 `cd ~/catkin_ws/src/ && git clone git@github.com:prl-mushr/mushr_pf.git`
 
 ### Running the PF
-For real car: `roslaunch mushr_pf real.launch`
+For real car: `roslaunch mushr_pf real.launch`  
 For sim: `roslaunch mushr_pf sim.launch`
+
+See [this tutorial](https://mushr.io/tutorials/navigation/) for more information.
 
 ### API
 Parameters can be changed in `config/params.yaml`
