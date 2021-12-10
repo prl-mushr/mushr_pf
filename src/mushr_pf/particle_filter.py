@@ -458,6 +458,9 @@ class ParticleFilter:
 if __name__ == "__main__":
     rospy.init_node("particle_filter", anonymous=True)  # Initialize the node
 
+    # Car name
+    car_name = rospy.get_param("~car_name")
+    
     publish_tf = bool(rospy.get_param("~publish_tf"))
     n_particles = int(rospy.get_param("~n_particles"))  # The number of particles
     # The number of particles to visualize
@@ -481,22 +484,19 @@ if __name__ == "__main__":
     max_range_meters = float(rospy.get_param("~max_range_meters"))
 
     # Offset conversion param from rpm to speed
-    speed_to_erpm_offset = float(rospy.get_param("/vesc/speed_to_erpm_offset", 0.0))
+    speed_to_erpm_offset = float(rospy.get_param(car_name + "/vesc/speed_to_erpm_offset", 0.0))
     # Gain conversion param from rpm to speed
-    speed_to_erpm_gain = float(rospy.get_param("/vesc/speed_to_erpm_gain", 4350))
+    speed_to_erpm_gain = float(rospy.get_param(car_name + "/vesc/speed_to_erpm_gain", 4350))
     # Offset conversion param from servo position to steering angle
     steering_angle_to_servo_offset = float(
-        rospy.get_param("/vesc/steering_angle_to_servo_offset", 0.5)
+        rospy.get_param(car_name + "/vesc/steering_angle_to_servo_offset", 0.5)
     )
     # Gain conversion param from servo position to steering angle
     steering_angle_to_servo_gain = float(
-        rospy.get_param("/vesc/steering_angle_to_servo_gain", -1.2135)
+        rospy.get_param(car_name + "/vesc/steering_angle_to_servo_gain", -1.2135)
     )
     # The length of the car
     car_length = float(rospy.get_param("/car_kinematics/car_length", 0.33))
-
-    # Car name
-    car_name = rospy.get_param("~car_name")
 
     # Create the particle filter
     pf = ParticleFilter(
