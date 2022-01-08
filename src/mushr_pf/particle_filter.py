@@ -3,7 +3,7 @@
 # Copyright (c) 2019, The Personal Robotics Lab, The MuSHR Team, The Contributors of MuSHR
 # License: BSD 3-Clause. See LICENSE.md file in root directory.
 
-import Queue
+import queue
 from threading import Lock
 
 import numpy as np
@@ -200,11 +200,11 @@ class ParticleFilter:
         angle_step = 4
 
         # The sample interval for permissible states
-        permissible_step = angle_step * len(permissible_x) / self.particles.shape[0]
+        permissible_step = angle_step * int(len(permissible_x) / self.particles.shape[0])
 
         # Indices of permissible states to use
         indices = np.arange(0, len(permissible_x), permissible_step)[
-            : (self.particles.shape[0] / angle_step)
+            : int((self.particles.shape[0] / angle_step))
         ]
 
         # Proxy for the new particles
@@ -213,8 +213,8 @@ class ParticleFilter:
         # Loop through permissible states, each iteration drawing particles with
         # different rotation
         for i in range(angle_step):
-            idx_start = i * (self.particles.shape[0] / angle_step)
-            idx_end = (i + 1) * (self.particles.shape[0] / angle_step)
+            idx_start = i * int(self.particles.shape[0] / angle_step)
+            idx_end = (i + 1) * int(self.particles.shape[0] / angle_step)
 
             permissible_states[idx_start:idx_end, 0] = permissible_y[indices]
             permissible_states[idx_start:idx_end, 1] = permissible_x[indices]
@@ -226,7 +226,6 @@ class ParticleFilter:
         # Reset particles and weights
         self.particles[:, :] = permissible_states[:, :]
         self.weights[:] = 1.0 / self.particles.shape[0]
-        # self.publish_particles(self.particles)
         self.state_lock.release()
 
     def reinit_cb(self, msg):
@@ -531,7 +530,7 @@ if __name__ == "__main__":
             pf.global_localization()
             pf.visualize()
             pf.N_VIZ_PARTICLES = temp
-            pf.ents = Queue.Queue()
+            pf.ents = queue.Queue()
             pf.ents_sum = 0.0
             pf.noisy_cnt = 0
         # Check if the sensor model says it's time to resample

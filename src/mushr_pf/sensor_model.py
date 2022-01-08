@@ -3,7 +3,7 @@
 # Copyright (c) 2019, The Personal Robotics Lab, The MuSHR Team, The Contributors of MuSHR
 # License: BSD 3-Clause. See LICENSE.md file in root directory.
 
-import Queue
+import queue
 from threading import Lock
 
 import numpy as np
@@ -94,13 +94,13 @@ class SensorModel:
         # FOR KIDNAPPED ROBOT PROBLEM
         self.do_confidence_update = False
         self.CONF_HISTORY_SIZE = 10
-        self.conf_history = Queue.Queue()
+        self.conf_history = queue.Queue()
         self.conf_sum = 0.0
         self.confidence = 1.0
 
     def reset_confidence(self):
         self.do_confidence_update = False
-        self.conf_history = Queue.Queue()
+        self.conf_history = queue.Queue()
         self.conf_sum = 0.0
         self.confidence = 1.0
 
