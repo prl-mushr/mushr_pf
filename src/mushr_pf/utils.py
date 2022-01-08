@@ -61,7 +61,7 @@ def particles_to_poses(particles):
       particles: A list of particles, where each element is itself a list of the form [x,y,theta]
       Returns: A list of equivalent geometry_msgs/Pose messages
     """
-    return map(particle_to_pose, particles)
+    return list(map(particle_to_pose, particles))
 
 
 def make_header(frame_id, stamp=None):
@@ -98,7 +98,7 @@ def points(arr):
     arr: A list of coordinates, where each element is itself a two dimensional list
     Returns: A list of geometry_msgs/Point32 messages
     """
-    return map(point, arr)
+    return list(map(point, arr))
 
 
 def get_map(map_topic):

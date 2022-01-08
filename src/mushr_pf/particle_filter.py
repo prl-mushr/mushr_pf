@@ -162,7 +162,7 @@ class ParticleFilter:
             self.global_localize = True  # True when doing global localization
 
         # precompute regions. Each region is represented by arrays of x, y indices on the map
-        region_size = len(self.permissible_x) / self.NUM_REGIONS
+        region_size = int(len(self.permissible_x) / self.NUM_REGIONS)
         idx = np.argsort(self.permissible_y)  # column-major
         _px, _py = self.permissible_x[idx], self.permissible_y[idx]
         for i in range(self.NUM_REGIONS):
@@ -281,7 +281,7 @@ class ParticleFilter:
         position = np.dot(self.particles[:, 0:2].transpose(), self.weights)
         position[0] += (car_length / 2) * np.cos(theta)
         position[1] += (car_length / 2) * np.sin(theta)
-        return np.array((position[0], position[1], theta), dtype=np.float)
+        return np.array((position[0], position[1], theta), dtype=float)
 
     def clicked_pose_cb(self, msg):
         """
