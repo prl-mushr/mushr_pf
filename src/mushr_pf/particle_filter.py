@@ -9,7 +9,7 @@ from threading import Lock
 import numpy as np
 import rospy
 import tf
-from geometry_msgs.msg import PoseArray, PoseStamped, PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseArray, PoseStamped, PointStamped
 from nav_msgs.msg import OccupancyGrid, Odometry
 from sensor_msgs.msg import LaserScan
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
@@ -156,7 +156,6 @@ class ParticleFilter:
         # number of updates for regional localization. Simulation 5, Real: 3.
         self.REGIONAL_ROUNDS = 5
         self.regions = []
-        self.click_mode = True
         self.debug_mode = False
         if self.debug_mode:
             self.global_localize = True  # True when doing global localization
@@ -173,16 +172,12 @@ class ParticleFilter:
                 )
             )
 
-        # Subscribe to the '/initialpose' topic. Publised by RVIZ. See clicked_pose_cb function in this file for more info
-        # three different reactions to click on rviz
+        # Subscribe to the '/clicked_point' topic. Publised by Foxglove. 
+        # See clicked_pose_cb function in this file for more info
         self.click_sub = rospy.Subscriber(
-            "/initialpose",
-            PoseWithCovarianceStamped,
-            self.clicked_pose_cb,
-            queue_size=1,
-        )
-        self.init_sub = rospy.Subscriber(
-            "/initialpose", PoseWithCovarianceStamped, self.reinit_cb, queue_size=1
+            "/clicked_point",
+            PointStamped,
+            self.clicked_point_cb,
         )
 
         rospy.wait_for_message(scan_topic, LaserScan)
@@ -283,35 +278,31 @@ class ParticleFilter:
         position[1] += (car_length / 2) * np.sin(theta)
         return np.array((position[0], position[1], theta), dtype=float)
 
-    def clicked_pose_cb(self, msg):
+    def clicked_point_cb(self, msg):
         """
         Reinitialize particles and weights according to the received initial pose
         Applies Gaussian noise to each particle's pose
-        HINT: use Utils.quaternion_to_angle()
-        Remember to use vectorized computation!
 
-        msg: '/initialpose' topic. RVIZ publishes a message to this topic when you specify an initial pose using its GUI
+        msg: PointStamped 
         returns: nothing
         """
-        if self.click_mode:
-            self.state_lock.acquire()
-            pose = msg.pose.pose
-            print("SETTING POSE")
+        self.state_lock.acquire()
+        point = msg.point
+        print("SETTING POSE")
 
-            VAR_X = 0.001
-            VAR_Y = 0.001
-            VAR_THETA = 0.001
-            quat = pose.orientation
-            theta = utils.quaternion_to_angle(quat)
-            x = pose.position.x
-            y = pose.position.y
-            self.particles[:, 0] = np.random.normal(x, VAR_X, self.particles.shape[0])
-            self.particles[:, 1] = np.random.normal(y, VAR_Y, self.particles.shape[0])
-            self.particles[:, 2] = np.random.normal(
-                theta, VAR_THETA, self.particles.shape[0]
-            )
-            self.weights.fill(1 / self.N_PARTICLES)
-            self.state_lock.release()
+        VAR_X = 0.001
+        VAR_Y = 0.001
+        VAR_THETA = 0.001
+        theta = 0.0 
+        x = point.x
+        y = point.y
+        self.particles[:, 0] = np.random.normal(x, VAR_X, self.particles.shape[0])
+        self.particles[:, 1] = np.random.normal(y, VAR_Y, self.particles.shape[0])
+        self.particles[:, 2] = np.random.normal(
+            theta, VAR_THETA, self.particles.shape[0]
+        )
+        self.weights.fill(1 / self.N_PARTICLES)
+        self.state_lock.release()
 
     def visualize(self):
         """
