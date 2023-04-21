@@ -16,13 +16,13 @@ if __name__ == "__main__":
     for f in range(0, num_figs):
         k_val = (f + 1) * 30
         # Keeps track of how many times each particle has been sampled across trials.
-        histogram = np.zeros(n_particles, dtype=np.float)
+        histogram = np.zeros(n_particles, dtype=float)
         for i in range(trials):
             # Create a set of particles
             particles = np.repeat(np.arange(n_particles)[:, np.newaxis], 3, axis=1)
             # Here their value encodes their index
             # Have increasing weights up until index k_val
-            weights = np.arange(n_particles, dtype=np.float)
+            weights = np.arange(n_particles, dtype=float)
             weights[k_val:] = 0.0
             weights[:] = weights[:] / np.sum(weights)
 

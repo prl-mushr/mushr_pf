@@ -157,7 +157,7 @@ class SensorModel:
                 0,
                 self.filtered_angles.shape[0],
                 float(self.filtered_angles.shape[0]) / ray_count,
-            ).astype(np.int)
+            ).astype(int)
 
             # Initialize down sample angles
             self.downsampled_angles = np.zeros(ray_count + 1, dtype=np.float32)
