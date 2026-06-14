@@ -4,7 +4,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-import rosbag
+import rosbag2_py as rosbag
 from nav_msgs.msg import OccupancyGrid
 
 import mushr_pf.utils as utils
@@ -18,13 +18,27 @@ if __name__ == "__main__":
 
         # Load laser scan and map from bag
         bag_path = "../bags/" + maps[m] + ".bag"
-        bag = rosbag.Bag(bag_path)
-        for _, msg, _ in bag.read_messages(topics=["/scan"]):
-            laser_msg = msg
-            break
-        for _, msg, _ in bag.read_messages(topics=["/map"]):
-            raw_map_msg = msg
-            break
+        reader = rosbag.SequentialReader()
+        storage_options = rosbag.StorageOptions(uri=bag_path, storage_id='mcap')
+        conversion_opts = rosbag.ConverterOptions("", "")
+        
+        reader.open(storage_options, conversion_opts)
+
+        while reader.has_next():
+            topic, data, timestamp = reader.read_next()
+            if topic == "/scan":
+                laser_msg = data
+                break
+
+        reader = rosbag.SequentialReader()
+        reader.open(storage_options)
+
+        while reader.has_next():
+            topic, data, timestamp = reader.read_next()
+            if topic == "/map":
+                raw_map_msg = data
+                break
+
         map_info = raw_map_msg.info
 
         # Convert to proper type. Fixes error with reading from bag and ros types
@@ -82,7 +96,7 @@ if __name__ == "__main__":
         for i in range(len(permissible_x)):
             img[permissible_y[i], permissible_x[i]] = weights[i]
 
-        infile = open("weights.csv", "r")
+        infile = open("data/weights.csv", "r")
         correct_weights = infile.read().split(",")
         plt.figure(maps[m])
         if m < 1:
@@ -93,4 +107,4 @@ if __name__ == "__main__":
             plt.imshow(img)
             plt.savefig("{}_test.png".format(maps[m]))
         print("check weight", np.mean(img))
-    # plt.show()
+    plt.show()

@@ -6,38 +6,23 @@
 from threading import Lock
 
 import numpy as np
-import rospy
+import rclpy
+from rclpy.node import Node
 from std_msgs.msg import Float64
 from vesc_msgs.msg import VescStateStamped
 
-# Tune these Values!
 KM_V_NOISE = 0.4  # Kinematic car velocity noise std dev
 KM_DELTA_NOISE = 0.2  # Kinematic car delta noise std dev
 KM_X_FIX_NOISE = 3e-2  # Kinematic car x position constant noise std dev
 KM_Y_FIX_NOISE = 3e-2  # Kinematic car y position constant noise std dev
 KM_THETA_FIX_NOISE = 1e-1  # Kinematic car theta constant noise std dev
 
-
-# #Tune these Values!
-# KM_V_NOISE = 0.01             # Kinematic car velocity noise std dev
-# KM_DELTA_NOISE = 0.06          # Kinematic car delta noise std dev
-# KM_X_FIX_NOISE = 3e-2          # Kinematic car x position constant noise std dev
-# KM_Y_FIX_NOISE = 1e-3        # Kinematic car y position constant noise std dev
-# KM_THETA_FIX_NOISE = 1e-2      # Kinematic car theta constant noise std dev
-
-# #Tune these Values!
-# KM_V_NOISE = 0.015            # Kinematic car velocity noise std dev
-# KM_DELTA_NOISE = 0.065             # Kinematic car delta noise std dev
-# KM_X_FIX_NOISE = 1e-2          # Kinematic car x position constant noise std dev
-# KM_Y_FIX_NOISE = 1e-2        # Kinematic car y position constant noise std dev
-# KM_THETA_FIX_NOISE = 1e-2      # Kinematic car theta constant noise std dev
-
 """
   Propagates the particles forward based the velocity and steering angle of the car
 """
 
 
-class KinematicMotionModel:
+class KinematicMotionModel():
 
     """
     Initializes the kinematic motion model
@@ -53,7 +38,7 @@ class KinematicMotionModel:
     """
 
     def __init__(
-        self,
+        self,node,
         motor_state_topic,
         servo_state_topic,
         speed_to_erpm_offset,
@@ -64,6 +49,9 @@ class KinematicMotionModel:
         particles,
         state_lock=None,
     ):
+        # super().__init__("kinematic_motion_model")
+
+        self.node = node
         self.last_servo_cmd = None  # The most recent servo command
         self.last_vesc_stamp = None  # The time stamp from the previous vesc state msg
         self.particles = particles
@@ -83,12 +71,12 @@ class KinematicMotionModel:
             self.state_lock = state_lock
 
         # This subscriber just caches the most recent servo position command
-        self.servo_pos_sub = rospy.Subscriber(
-            servo_state_topic, Float64, self.servo_cb, queue_size=1
+        self.servo_pos_sub = self.node.create_subscription(
+            Float64, servo_state_topic,  self.servo_cb, qos_profile=1
         )
         # Subscribe to the state of the vesc
-        self.motion_sub = rospy.Subscriber(
-            motor_state_topic, VescStateStamped, self.motion_cb, queue_size=1
+        self.motion_sub = self.node.create_subscription(
+            VescStateStamped, motor_state_topic, self.motion_cb, qos_profile=1
         )
 
     """
